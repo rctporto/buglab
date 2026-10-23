@@ -143,6 +143,11 @@ create policy historico_ler on public.historico for select to authenticated
   using (public.eh_dev());
 
 revoke all on public.perfis, public.registros, public.config, public.historico from anon;
+-- Acesso de quem está logado (as regras acima filtram as linhas). Explícito porque
+-- projetos novos do Supabase podem não liberar tabelas novas automaticamente.
+grant select, insert, update, delete on public.registros to authenticated;
+grant select, update on public.config to authenticated;
+grant select on public.perfis, public.historico to authenticated;
 
 -- ---------------------------------------------------------------------
 -- 4. Gatilhos: autor fixo, data de edição e histórico

@@ -30,7 +30,7 @@ Sistema web do **BugLab** (laboratório da Univille com a Nório Nanotecnologia,
 `registrar`, `editar_proprios`, `editar_todos`, `ver_relatorio`, `exportar`. Desenvolvedor tem todas + aba Desenvolvedor. Padrão de usuário: tudo menos `editar_todos`. As regras valem no banco (RLS), não só na interface.
 
 ## Usuários iniciais (`privado/02_usuarios_iniciais.sql` — NÃO versionar)
-renato.porto, patricia.uchoa, denise.abatti (desenvolvedor); romana.apel, amanda.schramm, gabriel.schroder (usuário). Senha inicial = login, troca obrigatória no 1º acesso.
+renato.porto, patricia.uchoa, denise.abatti (desenvolvedor); romana.apel, amanda.schramm, gabriel.schroder (usuário). Senha inicial aleatória (no próprio arquivo), troca obrigatória no 1º acesso.
 
 ## Telas (`app.js`)
 1. **Login** — logo centralizada, login e senha abaixo; botão de modo claro/escuro.
@@ -57,6 +57,6 @@ Logo: mosquito verde em círculo (`assets/buglab-logo-original.png`); wordmark *
 - [ ] Domínio próprio depois (CNAME + Site URL no Supabase) — nada mais muda.
 
 ## Cuidados
-- A prévia publicada no claude.ai está com link público e contém os logins; a senha inicial do sistema real é igual ao login. Antes de liberar o sistema real, ou restringir a prévia, ou usar senhas iniciais diferentes no `02_usuarios_iniciais.sql`.
+- A prévia publicada no claude.ai está com link público e contém os logins; por isso o `02_usuarios_iniciais.sql` usa senhas iniciais aleatórias (não iguais ao login).
 - Não commitar nada de `privado/`.
 - Ao mudar o banco, manter `01_estrutura.sql` reexecutável (`if not exists`, `create or replace`, `drop policy if exists`).
