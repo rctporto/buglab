@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BugLab · Alimentação</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,600;0,800;1,300&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+<script>try{var t=localStorage.getItem("buglab-tema");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body>
+
+<button class="theme floating" type="button" data-theme-btn aria-label="Alternar modo claro e escuro"></button>
+
+<!-- ============ LOGIN ============ -->
+<main id="tela-login" class="auth" hidden>
+  <div class="auth-box">
+    <img class="auth-logo" src="logo.png" alt="Logo BugLab">
+    <div class="wordmark big"><b>BUG</b><i>lab</i></div>
+    <p class="auth-sub">Controle de alimentação do insetário</p>
+    <form id="login-form" class="auth-form" novalidate>
+      <label class="f"><span class="lbl">Login</span>
+        <input type="text" id="l-login" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="nome.sobrenome">
+      </label>
+      <label class="f"><span class="lbl">Senha</span>
+        <span class="pw">
+          <input type="password" id="l-senha" autocomplete="current-password" placeholder="Sua senha">
+          <button type="button" class="pw-toggle" data-pw="l-senha">Mostrar</button>
+        </span>
+      </label>
+      <button class="btn wide" type="submit" id="l-btn">Entrar</button>
+      <p class="err" id="l-err" role="alert"></p>
+    </form>
+    <p class="hint center">Esqueceu a senha? Peça para um desenvolvedor redefinir.</p>
+  </div>
+</main>
+
+<!-- ============ TROCA DE SENHA (1º acesso) ============ -->
+<main id="tela-senha" class="auth" hidden>
+  <div class="auth-box">
+    <img class="auth-logo small" src="logo.png" alt="Logo BugLab">
+    <h1 class="auth-title">Crie sua senha</h1>
+    <p class="auth-sub" id="s-sub">Este é o seu primeiro acesso. Troque a senha inicial antes de continuar.</p>
+    <form id="senha-form" class="auth-form" novalidate>
+      <label class="f"><span class="lbl">Senha atual</span><input type="password" id="s-atual" autocomplete="current-password"></label>
+      <label class="f"><span class="lbl">Nova senha</span><input type="password" id="s-nova" autocomplete="new-password" placeholder="Mínimo de 8 caracteres"></label>
+      <label class="f"><span class="lbl">Repita a nova senha</span><input type="password" id="s-conf" autocomplete="new-password"></label>
+      <button class="btn wide" type="submit" id="s-btn">Salvar nova senha</button>
+      <p class="err" id="s-err" role="alert"></p>
+    </form>
+    <button class="linkbtn center" type="button" data-sair>Sair</button>
+  </div>
+</main>
+
+<!-- ============ SISTEMA ============ -->
+<div id="app" class="wrap" hidden>
+  <header class="top">
+    <div class="brand">
+      <img src="logo.png" alt="Logo BugLab">
+      <div><div class="wordmark"><b>BUG</b><i>lab</i></div><small>Controle de alimentação do insetário</small></div>
+    </div>
+    <div class="brk"></div>
+    <nav class="tabs" role="tablist" aria-label="Seções">
+      <button class="tab" role="tab" id="tab-calendario" aria-controls="view-calendario">Calendário</button>
+      <button class="tab" role="tab" id="tab-registro" aria-controls="view-registro">Registro</button>
+      <button class="tab" role="tab" id="tab-relatorio" aria-controls="view-relatorio">Relatório</button>
+      <button class="tab" role="tab" id="tab-dev" aria-controls="view-dev" hidden>Desenvolvedor</button>
+    </nav>
+    <div class="who-box">
+      <button class="theme" type="button" data-theme-btn aria-label="Alternar modo claro e escuro"></button>
+      <div class="me"><b id="me-nome"></b><span id="me-papel"></span></div>
+      <button class="btn ghost sm" type="button" data-sair>Sair</button>
+    </div>
+  </header>
+  <div id="notice" class="notice" hidden></div>
+
+  <!-- TELA 1: calendário -->
+  <section id="view-calendario" role="tabpanel" aria-labelledby="tab-calendario" hidden>
+    <div class="bar">
+      <h2 id="cal-title">Calendário</h2>
+      <div class="nav">
+        <button class="btn ghost" id="cal-prev" aria-label="Mês anterior">‹ Anterior</button>
+        <button class="btn ghost" id="cal-now">Hoje</button>
+        <button class="btn ghost" id="cal-next" aria-label="Próximo mês">Próximo ›</button>
+      </div>
+    </div>
+    <p class="hint" id="cal-hint" style="margin:-6px 0 14px">Clique em um dia para lançar a alimentação daquela data.</p>
+    <div class="cal" id="cal"></div>
+    <div class="cal-legend"><span class="dot on">G1</span> gaiola alimentada no dia <span class="dot">L</span> sem registro <span>· borda verde = hoje</span></div>
+  </section>
+
+  <!-- TELA 2: registro -->
+  <section id="view-registro" role="tabpanel" aria-labelledby="tab-registro" hidden>
+    <div class="bar">
+      <h2 id="reg-title">Registro</h2>
+      <button class="back" id="reg-back" type="button">‹ Voltar ao calendário</button>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="editing" id="editing" hidden>
+          <span>Editando um registro já salvo.</span>
+          <button class="linkbtn" type="button" id="edit-cancel">Cancelar edição</button>
+        </div>
+        <p class="notice soft" id="reg-blocked" hidden>Seu usuário não tem permissão para lançar registros. Você pode consultar o que já foi feito ao lado.</p>
+        <form id="form" novalidate>
+          <div class="row">
+            <label class="f"><span class="lbl">Responsável</span>
+              <input type="text" id="f-resp" list="dl-equipe" autocomplete="off">
+              <datalist id="dl-equipe"></datalist>
+            </label>
+            <label class="f"><span class="lbl">Data</span><input type="date" id="f-data"></label>
+            <label class="f"><span class="lbl">Hora</span><input type="time" id="f-hora"></label>
+          </div>
+          <fieldset><legend>Onde</legend><div class="chips" id="f-alvos"></div></fieldset>
+          <fieldset><legend>Atividades realizadas</legend><div class="chips" id="f-ativ"></div></fieldset>
+          <div class="row">
+            <label class="f"><span class="lbl">Ovos nas gaiolas</span>
+              <select id="f-ovos"><option value="">Não verificado</option><option value="sim">Presença de ovos</option><option value="nao">Sem ovos</option></select>
+            </label>
+          </div>
+          <label class="f"><span class="lbl">Observações</span>
+            <textarea id="f-obs" placeholder="Ex.: deixei solução açucarada pronta na geladeira; larvas se desenvolvendo bem"></textarea>
+          </label>
+          <div class="actions">
+            <button class="btn" type="submit" id="f-submit">Salvar registro</button>
+            <span class="err" id="f-err" role="alert"></span>
+          </div>
+        </form>
+      </div>
+      <aside class="side">
+        <div class="card">
+          <h3 id="day-h">Registros do dia</h3>
+          <ul class="daylist" id="day-list"></ul>
+          <div class="daynav">
+            <button class="btn ghost" type="button" id="d-prev">‹ Dia anterior</button>
+            <button class="btn ghost" type="button" id="d-next">Próximo dia ›</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Janelas de alimentação</h3>
+          <div class="windows">
+            <div class="win"><span>Adultos (gaiolas)</span><span class="mono" id="win-ad">10:00–18:00</span></div>
+            <div class="win"><span>Larvas</span><span class="mono" id="win-la">15:00–18:00</span></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- TELA 3: relatório -->
+  <section id="view-relatorio" role="tabpanel" aria-labelledby="tab-relatorio" hidden>
+    <div class="bar">
+      <h2 id="rel-title">Relatório</h2>
+      <div class="nav" id="rel-nav">
+        <button class="btn ghost" id="rel-prev">‹ Anterior</button>
+        <button class="btn ghost" id="rel-now">Atual</button>
+        <button class="btn ghost" id="rel-next">Próximo ›</button>
+      </div>
+      <button class="btn" id="pdf" hidden>Gerar PDF</button>
+      <button class="btn ghost" id="csv" hidden>Exportar CSV</button>
+    </div>
+    <div class="filters">
+      <div><div class="lbl">Período</div>
+        <div class="seg" role="group" aria-label="Período">
+          <button type="button" data-mode="semana" aria-pressed="true">Semana</button>
+          <button type="button" data-mode="mes" aria-pressed="false">Mês</button>
+          <button type="button" data-mode="tudo" aria-pressed="false">Tudo</button>
+        </div>
+      </div>
+      <label><span class="lbl">Responsável</span><select id="r-resp"><option value="">Todos</option></select></label>
+      <label><span class="lbl">Gaiola / larvas</span><select id="r-alvo"><option value="">Todas</option></select></label>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="sec" id="wk-sec">
+      <h3>Grade da semana</h3>
+      <div class="scroll"><table class="wk" id="wk-table"></table></div>
+      <div class="legend"><span>Cada célula mostra os horários registrados.</span><span><span class="out">18:40</span> fora da janela de alimentação</span><span>✓ feito, sem horário</span></div>
+    </div>
+    <div class="sec">
+      <h3 id="tally-h">Quantas vezes cada um alimentou</h3>
+      <div class="scroll tally"><table id="tally"></table></div>
+      <p class="hint" id="tally-note"></p>
+    </div>
+    <div class="sec">
+      <h3 id="log-h">Registros e observações</h3>
+      <div class="log" id="log"></div>
+    </div>
+  </section>
+
+  <!-- TELA 4: desenvolvedor -->
+  <section id="view-dev" role="tabpanel" aria-labelledby="tab-dev" hidden>
+    <div class="bar"><h2>Desenvolvedor</h2></div>
+    <div class="subtabs" role="tablist" aria-label="Áreas do desenvolvedor">
+      <button type="button" class="subtab" data-sub="usuarios" aria-selected="true">Usuários e permissões</button>
+      <button type="button" class="subtab" data-sub="novo" aria-selected="false">Novo usuário</button>
+      <button type="button" class="subtab" data-sub="sistema" aria-selected="false">Configurações</button>
+      <button type="button" class="subtab" data-sub="historico" aria-selected="false">Histórico de alterações</button>
+    </div>
+
+    <div data-subview="usuarios">
+      <p class="hint">Marque o que cada pessoa pode fazer e clique em <b>Salvar</b> na linha. Desenvolvedores têm todas as permissões e acesso a esta aba.</p>
+      <div class="scroll"><table class="users" id="users-table"></table></div>
+      <p class="err" id="users-err" role="alert"></p>
+    </div>
+
+    <div data-subview="novo" hidden>
+      <form class="card narrow" id="nu-form" novalidate>
+        <div class="row two">
+          <label class="f"><span class="lbl">Nome</span><input type="text" id="nu-nome" placeholder="Ex.: Kerolyn Silva"></label>
+          <label class="f"><span class="lbl">Login</span><input type="text" id="nu-login" autocapitalize="none" spellcheck="false" placeholder="nome.sobrenome"></label>
+        </div>
+        <div class="row two">
+          <label class="f"><span class="lbl">Senha inicial</span><input type="text" id="nu-senha" autocomplete="off" placeholder="Mínimo de 6 caracteres"></label>
+          <label class="f"><span class="lbl">Perfil</span>
+            <select id="nu-papel"><option value="usuario">Usuário</option><option value="desenvolvedor">Desenvolvedor</option></select>
+          </label>
+        </div>
+        <fieldset><legend>Pode</legend><div class="perm-list" id="nu-perms"></div></fieldset>
+        <p class="hint">A pessoa entra com a senha inicial e cria uma senha própria no primeiro acesso.</p>
+        <div class="actions"><button class="btn" type="submit" id="nu-btn">Criar usuário</button><span class="err" id="nu-err" role="alert"></span></div>
+      </form>
+    </div>
+
+    <div data-subview="sistema" hidden>
+      <form class="card narrow" id="cfg-form" novalidate>
+        <label class="f"><span class="lbl">Gaiolas e larvas (uma por linha)</span><textarea id="cfg-alvos" rows="5"></textarea></label>
+        <div class="row">
+          <label class="f"><span class="lbl">Adultos: das</span><input type="time" id="cfg-ad1"></label>
+          <label class="f"><span class="lbl">Adultos: até</span><input type="time" id="cfg-ad2"></label>
+          <label class="f"><span class="lbl">Semana começa na</span>
+            <select id="cfg-semana"><option value="0">domingo</option><option value="1">segunda</option><option value="2">terça</option><option value="3">quarta</option><option value="4">quinta</option><option value="5">sexta</option><option value="6">sábado</option></select>
+          </label>
+        </div>
+        <div class="row">
+          <label class="f"><span class="lbl">Larvas: das</span><input type="time" id="cfg-la1"></label>
+          <label class="f"><span class="lbl">Larvas: até</span><input type="time" id="cfg-la2"></label>
+        </div>
+        <fieldset><legend>Contagem anterior à plataforma</legend>
+          <div class="row">
+            <label class="f"><span class="lbl">Desde</span><input type="date" id="cfg-desde"></label>
+            <label class="f"><span class="lbl">Até</span><input type="date" id="cfg-ate"></label>
+          </div>
+          <label class="f" style="margin-top:12px"><span class="lbl">Vezes por pessoa (Nome = número)</span><textarea id="cfg-contagem" rows="4"></textarea></label>
+        </fieldset>
+        <div class="actions"><button class="btn" type="submit" id="cfg-btn">Salvar configurações</button><span class="err" id="cfg-err" role="alert"></span></div>
+      </form>
+    </div>
+
+    <div data-subview="historico" hidden>
+      <div class="bar tight"><p class="hint" style="margin:0;margin-right:auto">Últimas 300 alterações em registros, usuários e configurações.</p><button class="btn ghost sm" type="button" id="hist-reload">Atualizar</button></div>
+      <div class="scroll"><table class="hist" id="hist-table"></table></div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

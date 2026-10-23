@@ -1,0 +1,5 @@
+# Nunca versionar: senhas, prévia com logins e referências internas
+privado/
+*usuarios_iniciais*.sql
+.DS_Store
+node_modules/
