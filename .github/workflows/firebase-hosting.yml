@@ -1,0 +1,22 @@
+# Publica a pasta nova/ no Firebase Hosting da Nório (https://buglab-norio.web.app)
+# a cada envio para a main que mexa no site novo. Também roda pelo botão "Run workflow".
+# Segredos do repositório: FIREBASE_SERVICE_ACCOUNT (JSON da conta de serviço) e FIREBASE_PROJECT_ID.
+name: Publicar no Firebase
+
+on:
+  push:
+    branches: [main]
+    paths: ["nova/**", "firebase.json", ".github/workflows/firebase-hosting.yml"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
+          channelId: live
