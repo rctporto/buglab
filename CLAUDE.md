@@ -49,10 +49,12 @@ Logo: mosquito verde em círculo (`assets/buglab-logo-original.png`); wordmark *
 `mock.js` simula o Supabase em memória com os 6 usuários. `python3 privado/previa/montar_previa.py` gera `buglab-previa.html` (arquivo único). No artifact do claude.ai, downloads passam pela capability `downloads`; por isso `baixar()` em `app.js` tenta `window.claude.use("downloads")` e cai para `<a download>` no site normal.
 
 ## Status e próximos passos
-- [ ] Renato criar o repositório público no GitHub e o projeto no Supabase.
-- [ ] Preencher `config.js` (Project URL + anon key).
-- [ ] Rodar `01_estrutura.sql` e depois `privado/02_usuarios_iniciais.sql` no SQL Editor; desligar "Allow new users to sign up" e "Confirm email".
-- [ ] Ativar GitHub Pages; pôr a URL do site em Supabase → Authentication → URL Configuration.
+- [x] Repositório público <https://github.com/rctporto/buglab> (branch `main`); push via HTTPS com token clássico guardado no Keychain do Mac.
+- [x] GitHub Pages ativo: <https://rctporto.github.io/buglab/>.
+- [x] Projeto Supabase `BUGLAB` (us-east-1), `https://oovkoanznsaundopicnw.supabase.co`; `config.js` com a chave publishable (`sb_publishable_…`).
+- [x] Cadastro aberto e "Confirm email" desligados; Site URL = endereço do Pages.
+- [x] `01_estrutura.sql` e `02_usuarios_iniciais.sql` rodados (senhas iniciais aleatórias estão no próprio 02).
+- [ ] Rodar de novo o `01_estrutura.sql`, que agora tem grants explícitos para `authenticated` (projeto novo pode não liberar tabelas sozinho), e conferir em `information_schema.role_table_grants`.
 - [ ] Testar no Supabase real: login, troca de senha, registro, edição, permissões, histórico, PDF.
 - [ ] Domínio próprio depois (CNAME + Site URL no Supabase) — nada mais muda.
 
