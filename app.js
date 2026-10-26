@@ -79,7 +79,7 @@ const canEditRec = r => can("editar_todos") || (can("editar_proprios") && r.auto
 const SUN='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
 const MOON='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
 function effectiveTheme(){ const a=document.documentElement.getAttribute("data-theme"); if(a==="dark"||a==="light") return a; return matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"; }
-function paintThemeBtn(){ const dark=effectiveTheme()==="dark"; $$("[data-theme-btn]").forEach(b=>{b.innerHTML=(dark?SUN:MOON)+`<span>${dark?"Modo claro":"Modo escuro"}</span>`;b.setAttribute("aria-pressed",String(dark));}); }
+function paintThemeBtn(){ const dark=effectiveTheme()==="dark"; $$("[data-theme-btn]").forEach(b=>{b.innerHTML=(dark?MOON:SUN)+`<span>${dark?"Tema escuro":"Tema claro"}</span>`;b.setAttribute("aria-pressed",String(dark));}); }
 $$("[data-theme-btn]").forEach(b=>b.onclick=()=>{ const t=effectiveTheme()==="dark"?"light":"dark"; document.documentElement.setAttribute("data-theme",t); try{localStorage.setItem("buglab-tema",t)}catch(e){} paintThemeBtn(); });
 try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",paintThemeBtn); }catch(e){}
 paintThemeBtn();
@@ -92,6 +92,15 @@ function showScreen(name){
   document.body.classList.toggle("in-app", name==="app");
 }
 $$(".pw-toggle").forEach(b=>b.onclick=()=>{const i=document.getElementById(b.dataset.pw);const show=i.type==="password";i.type=show?"text":"password";b.replaceChildren(ico(show?"eye-off":"eye"));b.setAttribute("aria-label",show?"Ocultar senha":"Mostrar senha");});
+// "Manter conectado": a sessão fica no localStorage (sobrevive ao fechar o navegador) ou só no sessionStorage
+const lerManter = () => { try{ return localStorage.getItem("buglab-manter")!=="0"; }catch(e){ return true; } };
+const sessaoStore = {
+  getItem:k=>{ try{ return localStorage.getItem(k) ?? sessionStorage.getItem(k); }catch(e){ return null; } },
+  setItem:(k,v)=>{ try{ const m=lerManter(); (m?localStorage:sessionStorage).setItem(k,v); (m?sessionStorage:localStorage).removeItem(k); }catch(e){} },
+  removeItem:k=>{ try{ localStorage.removeItem(k); sessionStorage.removeItem(k); }catch(e){} }
+};
+$("#l-manter").checked = lerManter();
+$("#l-esqueci").onclick=()=>{ const a=$("#l-ajuda"); a.hidden=!a.hidden; $("#l-esqueci").setAttribute("aria-expanded",String(!a.hidden)); };
 $$("[data-sair]").forEach(b=>b.onclick=async()=>{ try{ await sb.auth.signOut(); }catch(e){} location.hash=""; location.reload(); });
 
 $("#login-form").addEventListener("submit", async e=>{
@@ -100,6 +109,7 @@ $("#login-form").addEventListener("submit", async e=>{
   if(!sb){ err.textContent="O sistema ainda não foi configurado (arquivo config.js)."; return; }
   const login=norm($("#l-login").value).toLowerCase(), senha=$("#l-senha").value;
   if(!login||!senha){ err.textContent="Preencha login e senha."; return; }
+  try{ localStorage.setItem("buglab-manter", $("#l-manter").checked?"1":"0"); }catch(e){}
   const btn=$("#l-btn"); btn.disabled=true; btn.textContent="Entrando…";
   try{
     const email = login.includes("@") ? login : `${login}@${CONF.dominioLogin||"buglab.local"}`;
@@ -678,7 +688,7 @@ $("#hist-reload").onclick=loadHist;
     $("#l-err").textContent = !window.supabase ? "Não foi possível carregar o sistema. Verifique a internet." : "Sistema ainda não configurado: preencha o arquivo config.js com os dados do Supabase.";
     return;
   }
-  sb = window.supabase.createClient(CONF.supabaseUrl, CONF.supabaseAnonKey, { auth:{ persistSession:true, autoRefreshToken:true } });
+  sb = window.supabase.createClient(CONF.supabaseUrl, CONF.supabaseAnonKey, { auth:{ persistSession:true, autoRefreshToken:true, storage:sessaoStore } });
   sb.auth.onAuthStateChange((ev)=>{ if(ev==="SIGNED_OUT" && !$("#app").hidden){ location.reload(); } });
   const { data } = await sb.auth.getSession();
   if(data && data.session && data.session.user){ await afterLogin(data.session.user); }

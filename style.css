@@ -76,6 +76,12 @@ body.in-app .theme.floating{display:none}
 .pw input{padding-right:52px}
 .pw-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);appearance:none;border:0;background:none;color:var(--muted);padding:8px;cursor:pointer;border-radius:8px;display:grid;place-items:center}
 .pw-toggle:hover{color:var(--fg);background:var(--sunk)}
+.auth-opts{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:2px}
+.auth-opts .chk{font-size:14.5px;gap:10px}
+.auth-opts .chk input{width:20px;height:20px}
+.link{appearance:none;border:0;background:none;padding:0;color:var(--accent-strong);font:500 14.5px var(--f-body);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.link:hover{color:var(--accent)}
+.auth-help{margin:0;padding:10px 14px;border-radius:var(--r-sm);background:var(--accent-soft);color:var(--fg);font-size:13.5px}
 .btn.wide{width:100%;padding:13px;font-size:16px;justify-content:center;margin-top:6px}
 .btn.arrow::after{content:"→";font-size:18px;line-height:1}
 .center{text-align:center;align-self:center}

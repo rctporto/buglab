@@ -34,6 +34,8 @@
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
   <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2.7s-6 6.3-6 11.3a6 6 0 0 0 12 0c0-5-6-11.3-6-11.3z"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-bars" viewBox="0 0 24 24"><path d="M6 20v-6M10 20V8M14 20v-9M18 20V4"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol>
 </svg>
@@ -46,12 +48,12 @@
     <div class="art-brand"><img src="logo.png" alt=""><div class="wordmark"><b>BUG</b><i>lab</i></div></div>
     <div class="art-copy">
       <p class="art-title">O cuidado diário.<br><em>A ciência em movimento.</em></p>
-      <p class="art-sub">Organize, acompanhe e registre as atividades do insetário.</p>
+      <p class="art-sub">Organize, acompanhe e registre as atividades do seu laboratório.</p>
     </div>
     <ul class="art-pills">
       <li><svg class="i"><use href="#i-drop"/></svg>Alimentação</li>
-      <li><svg class="i"><use href="#i-clip"/></svg>Registro</li>
-      <li><svg class="i"><use href="#i-chart"/></svg>Relatórios</li>
+      <li><svg class="i"><use href="#i-search"/></svg>Verificação</li>
+      <li><svg class="i"><use href="#i-bars"/></svg>Monitoramento</li>
     </ul>
     <img class="art-mark" src="logo.png" alt="">
   </aside>
@@ -71,10 +73,15 @@
             <button type="button" class="pw-toggle" data-pw="l-senha" aria-label="Mostrar senha"><svg class="i"><use href="#i-eye"/></svg></button>
           </span>
         </label>
+        <div class="auth-opts">
+          <label class="chk"><input type="checkbox" id="l-manter">Manter conectado</label>
+          <button type="button" class="link" id="l-esqueci" aria-controls="l-ajuda" aria-expanded="false">Esqueci minha senha</button>
+        </div>
+        <p class="auth-help" id="l-ajuda" hidden>Peça para um desenvolvedor redefinir sua senha. Você entra com a senha nova e cria uma senha própria no primeiro acesso.</p>
         <button class="btn wide arrow" type="submit" id="l-btn">Entrar</button>
         <p class="err" id="l-err" role="alert"></p>
       </form>
-      <div class="auth-note"><svg class="i"><use href="#i-shield"/></svg><p>Seu acesso é definido pelo perfil da sua conta.<br>Esqueceu a senha? Peça para um desenvolvedor redefinir.</p></div>
+      <div class="auth-note"><svg class="i"><use href="#i-shield"/></svg><p>Seu acesso é definido pelo perfil da sua conta.<br>Precisa de acesso? Fale com o administrador.</p></div>
     </div>
     <p class="auth-foot">BUGlab · Gestão do insetário</p>
   </div>
