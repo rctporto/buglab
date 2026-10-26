@@ -33,7 +33,9 @@ Sistema web do **BugLab** (laboratório da Univille com a Nório Nanotecnologia,
 renato.porto, patricia.uchoa, denise.abatti (desenvolvedor); romana.apel, amanda.schramm, gabriel.schroder (usuário). Senha inicial aleatória (no próprio arquivo), troca obrigatória no 1º acesso.
 
 ## Telas (`app.js`)
-1. **Login** — logo centralizada, login e senha abaixo; botão de modo claro/escuro.
+Layout do sistema (mockups de 26/10/2026): barra lateral (marca "Gestão do insetário", navegação com ícones, usuário e Sair embaixo), cabeçalho "Laboratório de entomologia", breadcrumbs, título grande com subtítulo, cartões de resumo e conteúdo em cartões. Ícones são `<symbol>` no topo do `index.html` (`ico()` no `app.js`). No celular a barra lateral vira faixa no topo com abas roláveis.
+
+1. **Login** — painel verde à esquerda (marca, frase, atalhos) e formulário à direita; botão de modo claro/escuro. Abaixo de 860px só o formulário.
 2. **Troca de senha** (1º acesso).
 3. **Calendário** — mês; clicar no dia abre o Registro daquela data; mostra quem alimentou e G1/G2/G3/L.
 4. **Registro** — formulário do dia + lista dos registros da data; edição de registro existente.
@@ -46,7 +48,7 @@ Regras de negócio: semana começa na **quarta** (como a planilha); janelas: adu
 Logo: mosquito verde em círculo (`assets/buglab-logo-original.png`); wordmark **BUG** (Archivo 800) + *lab* (Archivo 300 itálico). Verde principal `#3a8650` (claro) / `#5fb877` (escuro). Neutros levemente esverdeados. Todas as cores são tokens em `:root` com modo escuro por `prefers-color-scheme` e `[data-theme]`.
 
 ## Prévia (`privado/previa/`)
-`mock.js` simula o Supabase em memória com os 6 usuários. `python3 privado/previa/montar_previa.py` gera `buglab-previa.html` (arquivo único). No artifact do claude.ai, downloads passam pela capability `downloads`; por isso `baixar()` em `app.js` tenta `window.claude.use("downloads")` e cai para `<a download>` no site normal.
+`mock.js` simula o Supabase em memória com os 6 usuários. `python3 privado/previa/montar_previa.py` gera `buglab-previa.html` (arquivo único; o logo é embutido uma vez e preenche os `<img data-logo>`). No artifact do claude.ai, downloads passam pela capability `downloads`; por isso `baixar()` em `app.js` tenta `window.claude.use("downloads")` e cai para `<a download>` no site normal.
 
 ## Status e próximos passos
 - [x] Repositório público <https://github.com/rctporto/buglab> (branch `main`); push via HTTPS com token clássico guardado no Keychain do Mac.

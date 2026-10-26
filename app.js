@@ -53,6 +53,11 @@ const byDate = () => { const m={}; records.forEach(r=>{(m[r.data]||(m[r.data]=[]
 const fmtDT = ts => { if(!ts) return "—"; const d=new Date(ts); return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
 const errMsg = e => (e && (e.message || e.error_description)) || "Erro inesperado.";
 
+const SVGNS="http://www.w3.org/2000/svg";
+const ico = n => { const s=document.createElementNS(SVGNS,"svg"); s.setAttribute("class","i"); s.setAttribute("aria-hidden","true"); const u=document.createElementNS(SVGNS,"use"); u.setAttribute("href","#i-"+n); s.append(u); return s; };
+const statCard = ([n,l,ic,tone]) => el("div",{class:"stat"+(tone?" "+tone:"")},el("span",{class:"ic"},ico(ic)),el("div",{},el("b",{class:"mono",text:String(n)}),el("span",{text:l})));
+const iniciais = nome => { const p=norm(nome).split(" ").filter(Boolean); return ((p[0]||"?")[0]+(p.length>1?p.at(-1)[0]:"")).toUpperCase(); };
+
 function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2800);}
 function notice(msg){const n=$("#notice");n.textContent=msg||"";n.hidden=!msg;}
 
@@ -86,7 +91,7 @@ function showScreen(name){
   $("#app").hidden = name!=="app";
   document.body.classList.toggle("in-app", name==="app");
 }
-$$(".pw-toggle").forEach(b=>b.onclick=()=>{const i=document.getElementById(b.dataset.pw);const show=i.type==="password";i.type=show?"text":"password";b.textContent=show?"Ocultar":"Mostrar";});
+$$(".pw-toggle").forEach(b=>b.onclick=()=>{const i=document.getElementById(b.dataset.pw);const show=i.type==="password";i.type=show?"text":"password";b.replaceChildren(ico(show?"eye-off":"eye"));b.setAttribute("aria-label",show?"Ocultar senha":"Mostrar senha");});
 $$("[data-sair]").forEach(b=>b.onclick=async()=>{ try{ await sb.auth.signOut(); }catch(e){} location.hash=""; location.reload(); });
 
 $("#login-form").addEventListener("submit", async e=>{
@@ -143,6 +148,8 @@ async function enterApp(){
   showScreen("app");
   $("#me-nome").textContent = perfil.nome;
   $("#me-papel").textContent = PAPEL_L[perfil.papel] || perfil.papel;
+  $$("[data-avatar]").forEach(a=>{ a.textContent=iniciais(perfil.nome); a.title=perfil.nome; });
+  $("#cal-add").hidden = !can("registrar");
   $("#tab-dev").hidden = !isDev();
   $("#tab-relatorio").hidden = !can("ver_relatorio");
   $("#pdf").hidden = $("#csv").hidden = !can("exportar");
@@ -212,6 +219,13 @@ function renderCalendar(){
   $("#cal-hint").textContent = can("registrar") ? "Clique em um dia para lançar a alimentação daquela data." : "Clique em um dia para ver o que foi feito.";
   const first=new Date(y,m-1,1); const start=new Date(first); start.setDate(1-first.getDay());
   const map=byDate(); const t=todayIso();
+  const doMes=records.filter(r=>r.data.startsWith(calMonth));
+  $("#cal-stats").replaceChildren(...(loaded?[
+    [doMes.length,"registros no mês","file"],
+    [new Set(doMes.map(r=>r.data)).size,"dias com alimentação","check"],
+    [new Set(doMes.map(r=>r.responsavel)).size,"pessoas registraram","users","b"],
+    [(map[t]||[]).length,"registros hoje","clock","a"]
+  ]:[]).map(statCard));
   const cal=$("#cal"); cal.replaceChildren(...DOW.map(d=>el("div",{class:"dh",text:d})));
   const weeks = Math.ceil((first.getDay()+new Date(y,m,0).getDate())/7);
   for(let i=0;i<weeks*7;i++){
@@ -231,6 +245,7 @@ function renderCalendar(){
 $("#cal-prev").onclick=()=>{calMonth=addMonths(calMonth,-1);renderCalendar();};
 $("#cal-next").onclick=()=>{calMonth=addMonths(calMonth,1);renderCalendar();};
 $("#cal-now").onclick=()=>{calMonth=todayIso().slice(0,7);renderCalendar();};
+$("#cal-add").onclick=()=>openDay(todayIso());
 
 /* =================== registro =================== */
 function buildForm(){
@@ -278,7 +293,8 @@ $("#d-prev").onclick=()=>{ if(editingId) cancelEdit(); resetForm(addDays($("#f-d
 $("#d-next").onclick=()=>{ if(editingId) cancelEdit(); resetForm(addDays($("#f-data").value||todayIso(),1)); };
 function renderDay(){
   const d=$("#f-data").value||todayIso(); const dt=parse(d);
-  $("#reg-title").textContent=`${editingId?"Editar registro":"Registro"} · ${DOWL[dt.getDay()]}, ${brFull(d)}`;
+  $("#reg-title").textContent = editingId ? "Editar registro" : "Registrar alimentação";
+  $("#reg-date").textContent = `${DOWL[dt.getDay()]}, ${dt.getDate()} de ${MESES[dt.getMonth()].toLowerCase()} de ${dt.getFullYear()}`;
   $("#day-h").textContent = d===todayIso() ? `Registros de hoje · ${br(d)}` : `Registros de ${br(d)}`;
   const list=$("#day-list");
   if(!loaded){ list.replaceChildren(el("li",{class:"hint none",text:"Carregando…"})); return; }
@@ -338,7 +354,7 @@ function renderReport(){
   $("#rel-now").textContent = rMode==="mes"?"Mês atual":"Semana atual";
   const fr=filtered();
   const days=new Set(fr.map(r=>r.data)), people=new Set(fr.map(r=>r.responsavel));
-  $("#stats").replaceChildren(...[[fr.length,"registros"],[days.size,"dias com alimentação"],[people.size,"pessoas"],[fr.filter(r=>r.obs).length,"com observação"]].map(([n,l])=>el("div",{class:"stat"},el("b",{class:"mono",text:String(n)}),el("span",{text:l}))));
+  $("#stats").replaceChildren(...[[fr.length,"registros","file"],[days.size,"dias com alimentação","check"],[people.size,"pessoas","users","b"],[fr.filter(r=>r.obs).length,"com observação","msg","a"]].map(statCard));
   $("#wk-sec").hidden = rMode!=="semana";
   if(rMode==="semana") renderGrid(a, fr);
   renderTally(); renderLog(fr);
@@ -538,7 +554,7 @@ function renderUsers(){
       save.textContent="Salvar";
       if(error){ $("#users-err").textContent=errMsg(error); save.disabled=false; return; }
       toast(`${norm(nome.value)} atualizado`); loadUsers();
-      if(u.id===uid){ perfil.nome=norm(nome.value); $("#me-nome").textContent=perfil.nome; }
+      if(u.id===uid){ perfil.nome=norm(nome.value); $("#me-nome").textContent=perfil.nome; $$("[data-avatar]").forEach(a=>a.textContent=iniciais(perfil.nome)); }
     };
     const pwBtn=el("button",{class:"btn ghost sm",type:"button",text:"Redefinir senha"});
     const pwBox=el("div",{class:"u-pw",hidden:true});
