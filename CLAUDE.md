@@ -48,6 +48,9 @@ Logo: mosquito verde em círculo (`assets/buglab-logo-original.png`); wordmark *
 ## Prévia (`privado/previa/`)
 `mock.js` simula o Supabase em memória com os 6 usuários. `python3 privado/previa/montar_previa.py` gera `buglab-previa.html` (arquivo único). No artifact do claude.ai, downloads passam pela capability `downloads`; por isso `baixar()` em `app.js` tenta `window.claude.use("downloads")` e cai para `<a download>` no site normal.
 
+## Versão nova (`nova/`)
+O novo design (mockups de 26/10/2026) está publicado em <https://rctporto.github.io/buglab/nova/>, na pasta `nova/` (index.html, style.css, app.js, logo, favicon). Usa o mesmo `config.js` da raiz (`../config.js`), então o banco e os usuários são os mesmos. O site da raiz continua com o visual antigo até o Renato decidir trocar; o PR #1 (branch `novo-design`) faz essa troca na raiz. Ao mudar o sistema, mantenha as duas versões em dia ou combine qual delas vale.
+
 ## Status e próximos passos
 - [x] Repositório público <https://github.com/rctporto/buglab> (branch `main`); push via HTTPS com token clássico guardado no Keychain do Mac.
 - [x] GitHub Pages ativo: <https://rctporto.github.io/buglab/>.
