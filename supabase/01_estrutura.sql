@@ -61,6 +61,84 @@ create table if not exists public.historico (
 );
 create index if not exists historico_quando_idx on public.historico (quando desc);
 
+-- Agendamentos de atividades (telas Agendamentos e Escala da equipe; só administradores criam)
+create table if not exists public.agendamentos (
+  id               uuid primary key default gen_random_uuid(),
+  tipo             text not null check (tipo in ('alimentacao','verificacao')),
+  estagio          text not null check (estagio in ('ovos','larvas','pupas','adultos')),
+  gaiolas          text[] not null default '{}',
+  data             date not null,
+  hora             text not null default '',
+  responsavel_id   uuid references public.perfis(id) on delete set null,
+  responsavel      text not null default '',
+  obs              text not null default '',
+  origem           text not null default 'agendamento' check (origem in ('agendamento','escala')),
+  serie            uuid,
+  criado_por       uuid references auth.users(id) on delete set null default auth.uid(),
+  criado_em        timestamptz not null default now()
+);
+create index if not exists agendamentos_data_idx on public.agendamentos (data);
+
+-- Escala da equipe: horário de trabalho de cada pessoa por dia
+create table if not exists public.escala (
+  id              uuid primary key default gen_random_uuid(),
+  colaborador_id  uuid not null references public.perfis(id) on delete cascade,
+  colaborador     text not null default '',
+  data            date not null,
+  entrada         text not null default '',
+  saida           text not null default '',
+  criado_em       timestamptz not null default now(),
+  unique (colaborador_id, data)
+);
+create index if not exists escala_data_idx on public.escala (data);
+
+-- Registro da criação: lotes, placas de ovos e contagens até a emergência dos adultos
+create table if not exists public.lotes (
+  id         uuid primary key default gen_random_uuid(),
+  codigo     text not null unique,
+  especie    text not null default 'Aedes aegypti',
+  criado_por uuid references auth.users(id) on delete set null default auth.uid(),
+  criado_em  timestamptz not null default now()
+);
+
+create table if not exists public.placas (
+  id               uuid primary key default gen_random_uuid(),
+  lote_id          uuid not null references public.lotes(id) on delete cascade,
+  codigo           text not null,
+  inicio_eclosao   date,
+  ovos_iniciais    int check (ovos_iniciais is null or ovos_iniciais >= 0),
+  situacao         text not null default 'acompanhamento' check (situacao in ('acompanhamento','encerrado','descartado')),
+  criado_em        timestamptz not null default now(),
+  unique (lote_id, codigo)
+);
+
+create table if not exists public.criacao_registros (
+  id                uuid primary key default gen_random_uuid(),
+  placa_id          uuid not null references public.placas(id) on delete cascade,
+  data              date not null,
+  hora              text not null default '',
+  novas_larvas      int not null default 0 check (novas_larvas >= 0),
+  novas_pupas       int not null default 0 check (novas_pupas >= 0),
+  novos_adultos     int not null default 0 check (novos_adultos >= 0),
+  machos            int not null default 0 check (machos >= 0),
+  femeas            int not null default 0 check (femeas >= 0),
+  nao_identificado  int not null default 0 check (nao_identificado >= 0),
+  obs               text not null default '',
+  responsavel       text not null default '',
+  autor             uuid references auth.users(id) on delete set null default auth.uid(),
+  criado_em         timestamptz not null default now(),
+  check (machos + femeas + nao_identificado = novos_adultos)
+);
+create index if not exists criacao_registros_placa_idx on public.criacao_registros (placa_id, data);
+
+-- Registro diário por gaiola: tipo, estágio, agendamento e situação de cada gaiola
+-- gaiolas = [{"gaiola":"Gaiola 1","situacao":"realizada|nao_realizada","obs":"..."}]
+alter table public.registros add column if not exists tipo text;
+alter table public.registros add column if not exists estagio text;
+alter table public.registros add column if not exists agendamento_id uuid references public.agendamentos(id) on delete set null;
+alter table public.registros add column if not exists gaiolas jsonb not null default '[]'::jsonb;
+create index if not exists registros_agendamento_idx on public.registros (agendamento_id);
+
 -- ---------------------------------------------------------------------
 -- 2. Funções auxiliares de permissão
 -- ---------------------------------------------------------------------
@@ -142,12 +220,68 @@ drop policy if exists historico_ler on public.historico;
 create policy historico_ler on public.historico for select to authenticated
   using (public.eh_dev());
 
-revoke all on public.perfis, public.registros, public.config, public.historico from anon;
+alter table public.agendamentos      enable row level security;
+alter table public.escala            enable row level security;
+alter table public.lotes             enable row level security;
+alter table public.placas            enable row level security;
+alter table public.criacao_registros enable row level security;
+
+-- Agendamentos e escala: todos os ativos leem (calendário); só administradores (desenvolvedores) alteram
+drop policy if exists agendamentos_ler on public.agendamentos;
+create policy agendamentos_ler on public.agendamentos for select to authenticated using (public.eh_ativo());
+drop policy if exists agendamentos_gravar on public.agendamentos;
+create policy agendamentos_gravar on public.agendamentos for all to authenticated
+  using (public.eh_dev()) with check (public.eh_dev());
+
+drop policy if exists escala_ler on public.escala;
+create policy escala_ler on public.escala for select to authenticated using (public.eh_ativo());
+drop policy if exists escala_gravar on public.escala;
+create policy escala_gravar on public.escala for all to authenticated
+  using (public.eh_dev()) with check (public.eh_dev());
+
+-- Lotes e placas: quem lança registros cria e ajusta; só desenvolvedores excluem
+drop policy if exists lotes_ler on public.lotes;
+create policy lotes_ler on public.lotes for select to authenticated using (public.eh_ativo());
+drop policy if exists lotes_criar on public.lotes;
+create policy lotes_criar on public.lotes for insert to authenticated with check (public.tem_perm('registrar'));
+drop policy if exists lotes_editar on public.lotes;
+create policy lotes_editar on public.lotes for update to authenticated
+  using (public.tem_perm('registrar')) with check (public.tem_perm('registrar'));
+drop policy if exists lotes_excluir on public.lotes;
+create policy lotes_excluir on public.lotes for delete to authenticated using (public.eh_dev());
+
+drop policy if exists placas_ler on public.placas;
+create policy placas_ler on public.placas for select to authenticated using (public.eh_ativo());
+drop policy if exists placas_criar on public.placas;
+create policy placas_criar on public.placas for insert to authenticated with check (public.tem_perm('registrar'));
+drop policy if exists placas_editar on public.placas;
+create policy placas_editar on public.placas for update to authenticated
+  using (public.tem_perm('registrar')) with check (public.tem_perm('registrar'));
+drop policy if exists placas_excluir on public.placas;
+create policy placas_excluir on public.placas for delete to authenticated using (public.eh_dev());
+
+-- Contagens da criação: mesmas regras dos registros de alimentação
+drop policy if exists criacao_ler on public.criacao_registros;
+create policy criacao_ler on public.criacao_registros for select to authenticated using (public.eh_ativo());
+drop policy if exists criacao_criar on public.criacao_registros;
+create policy criacao_criar on public.criacao_registros for insert to authenticated
+  with check (public.tem_perm('registrar') and autor = auth.uid());
+drop policy if exists criacao_editar on public.criacao_registros;
+create policy criacao_editar on public.criacao_registros for update to authenticated
+  using (public.tem_perm('editar_todos') or (public.tem_perm('editar_proprios') and autor = auth.uid()))
+  with check (public.tem_perm('editar_todos') or (public.tem_perm('editar_proprios') and autor = auth.uid()));
+drop policy if exists criacao_excluir on public.criacao_registros;
+create policy criacao_excluir on public.criacao_registros for delete to authenticated
+  using (public.tem_perm('editar_todos') or (public.tem_perm('editar_proprios') and autor = auth.uid()));
+
+revoke all on public.perfis, public.registros, public.config, public.historico,
+  public.agendamentos, public.escala, public.lotes, public.placas, public.criacao_registros from anon;
 -- Acesso de quem está logado (as regras acima filtram as linhas). Explícito porque
 -- projetos novos do Supabase podem não liberar tabelas novas automaticamente.
 grant select, insert, update, delete on public.registros to authenticated;
 grant select, update on public.config to authenticated;
 grant select on public.perfis, public.historico to authenticated;
+grant select, insert, update, delete on public.agendamentos, public.escala, public.lotes, public.placas, public.criacao_registros to authenticated;
 
 -- ---------------------------------------------------------------------
 -- 4. Gatilhos: autor fixo, data de edição e histórico
@@ -180,6 +314,13 @@ begin
     else v_alvo := to_char(new.data, 'DD/MM/YYYY') || ' · ' || new.responsavel; end if;
   elsif tg_table_name = 'perfis' then
     if tg_op = 'DELETE' then v_alvo := old.login; else v_alvo := new.login; end if;
+  elsif tg_table_name in ('agendamentos', 'escala', 'criacao_registros') then
+    v_det := case when tg_op = 'DELETE' then to_jsonb(old) else to_jsonb(new) end;
+    v_alvo := to_char((v_det ->> 'data')::date, 'DD/MM/YYYY') || ' · ' ||
+              coalesce(nullif(v_det ->> 'responsavel', ''), v_det ->> 'colaborador', '');
+  elsif tg_table_name in ('lotes', 'placas') then
+    v_det := case when tg_op = 'DELETE' then to_jsonb(old) else to_jsonb(new) end;
+    v_alvo := v_det ->> 'codigo';
   else
     v_alvo := 'Configurações';
   end if;
@@ -206,6 +347,28 @@ create trigger historico_perfis after insert or update or delete on public.perfi
 drop trigger if exists historico_config on public.config;
 create trigger historico_config after update on public.config
   for each row execute function public.registrar_historico();
+
+do $$
+declare t text;
+begin
+  foreach t in array array['agendamentos','escala','lotes','placas','criacao_registros'] loop
+    execute format('drop trigger if exists historico_%1$s on public.%1$s', t);
+    execute format('create trigger historico_%1$s after insert or update or delete on public.%1$s
+                    for each row execute function public.registrar_historico()', t);
+  end loop;
+end $$;
+
+-- Contagem da criação: autor fixo na edição (como nos registros)
+create or replace function public.criacao_ao_editar() returns trigger
+language plpgsql as $$
+begin
+  new.autor := old.autor;
+  new.criado_em := old.criado_em;
+  return new;
+end $$;
+drop trigger if exists criacao_ao_editar on public.criacao_registros;
+create trigger criacao_ao_editar before update on public.criacao_registros
+  for each row execute function public.criacao_ao_editar();
 
 -- ---------------------------------------------------------------------
 -- 5. Gestão de usuários
@@ -370,13 +533,18 @@ grant execute on function public.admin_excluir_usuario(uuid) to authenticated;
 grant execute on function public.trocar_minha_senha(text, text) to authenticated;
 
 -- ---------------------------------------------------------------------
--- 6. Atualização ao vivo dos registros entre as telas abertas
+-- 6. Atualização ao vivo entre as telas abertas
 -- ---------------------------------------------------------------------
 do $$
+declare t text;
 begin
-  alter publication supabase_realtime add table public.registros;
-exception when duplicate_object then null;
-          when undefined_object then null;
+  foreach t in array array['registros','agendamentos','escala','lotes','placas','criacao_registros'] loop
+    begin
+      execute format('alter publication supabase_realtime add table public.%I', t);
+    exception when duplicate_object then null;
+              when undefined_object then null;
+    end;
+  end loop;
 end $$;
 
 -- ---------------------------------------------------------------------
