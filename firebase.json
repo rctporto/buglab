@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "buglab-norio",
+    "site": "buglab-adm",
     "public": "nova",
     "ignore": ["firebase.json", "**/.*"],
     "headers": [

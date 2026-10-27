@@ -1,5 +1,5 @@
 // BugLab · configuração do Supabase
-// Cópia do config.js da raiz para o site novo (GitHub /nova e Firebase buglab-norio.web.app). Mantenha os dois iguais.
+// Cópia do config.js da raiz para o site novo (GitHub /nova e Firebase buglab-adm.web.app). Mantenha os dois iguais.
 // Supabase → Project Settings → API. Cole a Project URL e a chave "anon / public".
 // A chave anon é pública por natureza (o acesso é protegido pelas regras do banco).
 // NUNCA coloque aqui a chave "service_role".

@@ -1,6 +1,7 @@
-# Publica a pasta nova/ no Firebase Hosting da Nório (https://buglab-norio.web.app)
+# Publica a pasta nova/ no Firebase Hosting da Nório (https://buglab-adm.web.app)
 # a cada envio para a main que mexa no site novo. Também roda pelo botão "Run workflow".
-# Segredos do repositório: FIREBASE_SERVICE_ACCOUNT (JSON da conta de serviço) e FIREBASE_PROJECT_ID.
+# Segredos do repositório: FIREBASE_TOKEN (gerado com `firebase login:ci`) e FIREBASE_PROJECT_ID.
+# Sem os segredos o job é pulado; dá para publicar à mão com `firebase deploy --only hosting`.
 name: Publicar no Firebase
 
 on:
@@ -12,11 +13,16 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v4
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+        if: env.FIREBASE_TOKEN != ''
+      - uses: actions/setup-node@v4
+        if: env.FIREBASE_TOKEN != ''
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
-          channelId: live
+          node-version: 20
+      - name: firebase deploy
+        if: env.FIREBASE_TOKEN != ''
+        run: npx --yes firebase-tools@13 deploy --only hosting --project "$FIREBASE_PROJECT_ID" --non-interactive
