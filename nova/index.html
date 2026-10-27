@@ -37,6 +37,22 @@
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
   <symbol id="i-bars" viewBox="0 0 24 24"><path d="M6 20v-6M10 20V8M14 20v-9M18 20V4"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></symbol>
+  <symbol id="i-bug" viewBox="0 0 24 24"><path d="M9 7.5V6a3 3 0 0 1 6 0v1.5"/><rect x="7" y="7.5" width="10" height="12" rx="5"/><path d="M12 11v8.5M3 13h4M17 13h4M4 7l3 2M20 7l-3 2M4 20l3-2.5M20 20l-3-2.5"/></symbol>
+  <symbol id="i-fork" viewBox="0 0 24 24"><path d="M7 2v8M4 2v5a3 3 0 0 0 6 0V2M7 10v12M17 2c-2 1.5-3 4-3 7v4h3v9M17 2v20"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 11v6M14 11v6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-egg" viewBox="0 0 24 24"><path d="M12 2.5c-3.6 0-7 6-7 11a7 7 0 0 0 14 0c0-5-3.4-11-7-11z"/></symbol>
+  <symbol id="i-worm" viewBox="0 0 24 24"><path d="M5 19c2 0 3-2 3-4s1-4 3-4 3 2 5 2 3-2 3-4-1-3-2-4"/><circle cx="17" cy="4.5" r="1"/></symbol>
+  <symbol id="i-pupa" viewBox="0 0 24 24"><path d="M14 4a6 6 0 0 1 2 9c-1.5 2-1 4-3 6s-6 1-6-2 3-3 3-6-2-4 0-6 3-1 4-1z"/></symbol>
+  <symbol id="i-male" viewBox="0 0 24 24"><circle cx="10" cy="14" r="6"/><path d="M14.5 9.5 20 4M15 4h5v5"/></symbol>
+  <symbol id="i-female" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M12 15v7M9 19h6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol>
 </svg>
 
@@ -123,8 +139,12 @@
       <div><div class="wordmark"><b>BUG</b><i>lab</i></div><small>Gestão do insetário</small></div>
     </div>
     <nav class="tabs" role="tablist" aria-label="Seções" aria-orientation="vertical">
+      <button class="tab" role="tab" id="tab-dashboard" aria-controls="view-dashboard" hidden><svg class="i"><use href="#i-home"/></svg><span>Dashboard</span></button>
       <button class="tab" role="tab" id="tab-calendario" aria-controls="view-calendario"><svg class="i"><use href="#i-cal"/></svg><span>Calendário</span></button>
       <button class="tab" role="tab" id="tab-registro" aria-controls="view-registro"><svg class="i"><use href="#i-clip"/></svg><span>Registro diário</span></button>
+      <button class="tab" role="tab" id="tab-criacao" aria-controls="view-criacao"><svg class="i"><use href="#i-bug"/></svg><span>Registro da criação</span></button>
+      <button class="tab" role="tab" id="tab-agendamentos" aria-controls="view-agendamentos" hidden><svg class="i"><use href="#i-cal"/></svg><span>Agendamentos</span></button>
+      <button class="tab" role="tab" id="tab-escala" aria-controls="view-escala" hidden><svg class="i"><use href="#i-users"/></svg><span>Escala da equipe</span></button>
       <button class="tab" role="tab" id="tab-relatorio" aria-controls="view-relatorio"><svg class="i"><use href="#i-chart"/></svg><span>Relatório</span></button>
       <button class="tab" role="tab" id="tab-dev" aria-controls="view-dev" hidden><svg class="i"><use href="#i-cog"/></svg><span>Desenvolvedor</span></button>
     </nav>
@@ -144,38 +164,102 @@
     <div class="content">
       <div id="notice" class="notice" hidden></div>
 
-      <!-- TELA 1: calendário -->
+      <!-- DASHBOARD (administradores) -->
+      <section id="view-dashboard" role="tabpanel" aria-labelledby="tab-dashboard" hidden>
+        <div class="page-head">
+          <div>
+            <nav class="crumbs" aria-label="Caminho"><span>Administração</span><span>Dashboard</span></nav>
+            <h1>Visão geral do laboratório <span class="badge"><svg class="i"><use href="#i-lock"/></svg>Administrativo</span></h1>
+            <p class="page-sub">Acompanhe a rotina da equipe e o desenvolvimento da criação.</p>
+          </div>
+          <div class="head-actions"><label class="date-pill input"><svg class="i"><use href="#i-cal"/></svg><input type="date" id="db-data" aria-label="Data do painel"></label></div>
+        </div>
+        <div class="stats four" id="db-stats"></div>
+        <div class="sec-head">
+          <h2>Desenvolvimento da criação</h2>
+          <div class="sec-filters">
+            <select id="db-mes" aria-label="Mês"></select>
+            <select id="db-especie" aria-label="Espécie"></select>
+            <select id="db-placa" aria-label="Lote e placa"></select>
+          </div>
+        </div>
+        <div class="db-grid">
+          <div class="card">
+            <h3>Conversão entre estágios</h3>
+            <p class="card-sub" id="db-conv-sub"></p>
+            <div id="db-conv"></div>
+          </div>
+          <div class="card">
+            <h3>Adultos por sexo</h3>
+            <p class="card-sub" id="db-sexo-sub"></p>
+            <div id="db-sexo"></div>
+          </div>
+          <div class="card">
+            <h3>Emergência de adultos</h3>
+            <p class="card-sub" id="db-emerg-sub">Novos adultos por dia · mesmo lote</p>
+            <div id="db-emerg"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Rotina do dia</h3><button class="link" type="button" id="db-ver-cal">Ver calendário →</button></div>
+            <div class="scroll"><table class="rotina" id="db-rotina"></table></div>
+            <p class="hint" id="db-rotina-n"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CALENDÁRIO DE ATIVIDADES -->
       <section id="view-calendario" role="tabpanel" aria-labelledby="tab-calendario" hidden>
         <div class="page-head">
           <div>
             <nav class="crumbs" aria-label="Caminho"><span>Rotina</span><span>Calendário</span></nav>
-            <h1>Calendário de alimentação</h1>
-            <p class="page-sub" id="cal-hint">Clique em um dia para lançar a alimentação daquela data.</p>
+            <h1>Calendário de atividades</h1>
+            <p class="page-sub">Acompanhe a programação e registre o que foi realizado.</p>
           </div>
-          <div class="head-actions"><button class="btn" type="button" id="cal-add" hidden><svg class="i"><use href="#i-plus"/></svg>Registrar hoje</button></div>
+          <div class="head-actions"><button class="btn" type="button" id="cal-add" hidden><svg class="i"><use href="#i-plus"/></svg>Registrar atividade</button></div>
         </div>
         <div class="stats" id="cal-stats"></div>
         <div class="card flush">
           <div class="toolbar">
             <div class="nav">
-              <button class="icon-btn" type="button" id="cal-prev" aria-label="Mês anterior"><svg class="i"><use href="#i-left"/></svg></button>
-              <button class="icon-btn" type="button" id="cal-next" aria-label="Próximo mês"><svg class="i"><use href="#i-right"/></svg></button>
+              <button class="icon-btn" type="button" id="cal-prev" aria-label="Anterior"><svg class="i"><use href="#i-left"/></svg></button>
+              <button class="icon-btn" type="button" id="cal-next" aria-label="Próximo"><svg class="i"><use href="#i-right"/></svg></button>
               <button class="btn ghost sm" type="button" id="cal-now">Hoje</button>
             </div>
             <h2 id="cal-title">Calendário</h2>
+            <div class="toolbar-end">
+              <div class="seg" role="group" aria-label="Visualização" id="cal-modo">
+                <button type="button" data-cal="semana" aria-pressed="true">Semana</button>
+                <button type="button" data-cal="mes" aria-pressed="false">Mês</button>
+              </div>
+              <select id="cal-filtro" aria-label="Filtrar atividades">
+                <option value="">Todas as atividades</option>
+                <option value="minhas">Minhas atividades</option>
+                <option value="alimentacao">Alimentação</option>
+                <option value="verificacao">Verificação</option>
+                <option value="pendentes">Pendentes e atrasadas</option>
+              </select>
+            </div>
           </div>
-          <div class="cal" id="cal"></div>
+          <div class="cal-body">
+            <div class="cal-main" id="cal-main"></div>
+            <aside class="cal-side" id="cal-side"></aside>
+          </div>
         </div>
-        <div class="cal-legend"><span><span class="dot on">G1</span> gaiola alimentada no dia</span><span><span class="dot">L</span> sem registro</span><span><span class="sw-today"></span> hoje</span></div>
+        <div class="cal-legend">
+          <span><span class="sw ali"></span>Alimentação</span>
+          <span><span class="sw ver"></span>Verificação</span>
+          <span><span class="sw-ok"><svg class="i"><use href="#i-check"/></svg></span>Concluída</span>
+          <span><span class="sw-today"></span>Hoje</span>
+        </div>
       </section>
 
-      <!-- TELA 2: registro -->
+      <!-- REGISTRO DIÁRIO -->
       <section id="view-registro" role="tabpanel" aria-labelledby="tab-registro" hidden>
         <div class="page-head">
           <div>
-            <nav class="crumbs" aria-label="Caminho"><button class="back" id="reg-back" type="button">Calendário</button><span>Registro diário</span></nav>
-            <h1 id="reg-title">Registrar alimentação</h1>
-            <p class="page-sub">Um registro para todas as gaiolas atendidas na visita.</p>
+            <nav class="crumbs" aria-label="Caminho"><button class="back" id="reg-back" type="button">Rotina</button><span>Registro diário</span></nav>
+            <h1 id="reg-title">Registrar atividade</h1>
+            <p class="page-sub">Um registro para todas as gaiolas atendidas.</p>
           </div>
           <div class="head-actions"><span class="date-pill"><svg class="i"><use href="#i-cal"/></svg><span id="reg-date"></span></span></div>
         </div>
@@ -187,31 +271,72 @@
             </div>
             <p class="notice soft" id="reg-blocked" hidden>Seu usuário não tem permissão para lançar registros. Você pode consultar o que já foi feito ao lado.</p>
             <form id="form" novalidate>
+              <fieldset class="first"><legend>Tipo de atividade</legend>
+                <div class="opts" id="f-tipo">
+                  <label class="opt"><input type="radio" name="f-tipo" value="alimentacao" checked><span class="opt-ic"><svg class="i"><use href="#i-fork"/></svg></span><span class="opt-t"><b>Alimentação</b></span></label>
+                  <label class="opt"><input type="radio" name="f-tipo" value="verificacao"><span class="opt-ic"><svg class="i"><use href="#i-search"/></svg></span><span class="opt-t"><b>Verificação</b></span></label>
+                </div>
+              </fieldset>
+              <div class="row two">
+                <label class="f"><span class="lbl">Estágio</span><select id="f-estagio"></select></label>
+                <label class="f"><span class="lbl">Agendamento</span><select id="f-agenda"></select></label>
+              </div>
+              <fieldset><legend>Gaiolas da atividade <span class="count-pill" id="f-gcount"></span></legend>
+                <p class="hint leg-sub">Adicione todas as gaiolas atendidas no mesmo registro.</p>
+                <div class="picker">
+                  <select id="f-gsel" aria-label="Selecionar gaiola"></select>
+                  <button class="btn ghost" type="button" id="f-gadd"><svg class="i"><use href="#i-plus"/></svg>Adicionar</button>
+                  <button class="linkbtn" type="button" id="f-gall">Todas</button>
+                </div>
+                <div class="tokens" id="f-gchips"></div>
+                <div class="scroll gtable-wrap" id="f-gwrap" hidden><table class="gtable" id="f-gtable"></table></div>
+              </fieldset>
               <div class="row">
-                <label class="f"><span class="lbl">Responsável</span>
+                <label class="f"><span class="lbl">Data da execução</span><input type="date" id="f-data"></label>
+                <label class="f"><span class="lbl">Horário</span><input type="time" id="f-hora"></label>
+                <label class="f"><span class="lbl">Registrado por</span>
                   <input type="text" id="f-resp" list="dl-equipe" autocomplete="off">
                   <datalist id="dl-equipe"></datalist>
                 </label>
-                <label class="f"><span class="lbl">Data</span><input type="date" id="f-data"></label>
-                <label class="f"><span class="lbl">Hora</span><input type="time" id="f-hora"></label>
               </div>
-              <fieldset><legend>Gaiolas e larvas atendidas</legend><div class="chips" id="f-alvos"></div></fieldset>
-              <fieldset><legend>Atividades realizadas</legend><div class="chips" id="f-ativ"></div></fieldset>
-              <div class="row">
-                <label class="f"><span class="lbl">Ovos nas gaiolas</span>
-                  <select id="f-ovos"><option value="">Não verificado</option><option value="sim">Presença de ovos</option><option value="nao">Sem ovos</option></select>
-                </label>
-              </div>
-              <label class="f"><span class="lbl">Observações</span>
-                <textarea id="f-obs" placeholder="Ex.: deixei solução açucarada pronta na geladeira; larvas se desenvolvendo bem"></textarea>
+              <details class="more" id="f-more">
+                <summary>Detalhes do manejo <span class="hint">(opcional: o que foi feito e ovos)</span></summary>
+                <div class="more-body">
+                  <div class="chips" id="f-ativ"></div>
+                  <label class="f"><span class="lbl">Ovos nas gaiolas</span>
+                    <select id="f-ovos"><option value="">Não verificado</option><option value="sim">Presença de ovos</option><option value="nao">Sem ovos</option></select>
+                  </label>
+                </div>
+              </details>
+              <label class="f"><span class="lbl">Observações gerais</span>
+                <textarea id="f-obs" placeholder="Descreva ocorrências relevantes…"></textarea>
               </label>
               <div class="actions">
                 <span class="err" id="f-err" role="alert"></span>
+                <button class="btn ghost" type="button" id="f-cancel">Cancelar</button>
                 <button class="btn" type="submit" id="f-submit">Salvar registro</button>
               </div>
             </form>
           </div>
           <aside class="aside">
+            <div class="card">
+              <h3>Resumo do registro</h3>
+              <div class="sum-list">
+                <div class="sum-item"><span class="sum-ic"><svg class="i"><use href="#i-fork"/></svg></span><div><span>Atividade</span><b id="rs-tipo">—</b></div></div>
+                <div class="sum-item"><span class="sum-ic"><svg class="i"><use href="#i-bug"/></svg></span><div><span>Estágio</span><b id="rs-estagio">—</b></div></div>
+                <div class="sum-item"><span class="sum-ic"><svg class="i"><use href="#i-cal"/></svg></span><div><span>Data e horário</span><b id="rs-dt">—</b></div></div>
+              </div>
+              <div class="sum-big"><b id="rs-n">0</b> <span id="rs-nl">gaiolas</span></div>
+              <div class="sum-split">
+                <div class="ok"><svg class="i"><use href="#i-check"/></svg><div><b id="rs-ok">0</b><span>realizadas</span></div></div>
+                <div class="nok"><svg class="i"><use href="#i-alert"/></svg><div><b id="rs-nok">0</b><span>não realizadas</span></div></div>
+              </div>
+              <div class="warn-box" id="rs-warn" hidden><svg class="i"><use href="#i-alert"/></svg><div><b>Agendamento parcialmente realizado</b><span>O motivo deve ser informado para cada gaiola não atendida.</span></div></div>
+            </div>
+            <div class="card info">
+              <svg class="i"><use href="#i-info"/></svg>
+              <div><h3>Registro em conjunto</h3><p class="hint" style="margin:0">A atividade é única. O histórico de cada gaiola permanece individual.</p></div>
+            </div>
             <div class="card">
               <h3 id="day-h">Registros do dia</h3>
               <ul class="daylist" id="day-list"></ul>
@@ -220,21 +345,248 @@
                 <button class="btn ghost sm" type="button" id="d-next">Próximo dia<svg class="i"><use href="#i-right"/></svg></button>
               </div>
             </div>
-            <div class="card info">
-              <svg class="i"><use href="#i-clock"/></svg>
-              <div>
-                <h3>Janelas de alimentação</h3>
-                <div class="windows">
-                  <div class="win"><span>Adultos (gaiolas)</span><span class="mono" id="win-ad">10:00–18:00</span></div>
-                  <div class="win"><span>Larvas</span><span class="mono" id="win-la">15:00–18:00</span></div>
-                </div>
-              </div>
-            </div>
           </aside>
         </div>
       </section>
 
-      <!-- TELA 3: relatório -->
+      <!-- REGISTRO DA CRIAÇÃO -->
+      <section id="view-criacao" role="tabpanel" aria-labelledby="tab-criacao" hidden>
+        <div class="page-head">
+          <div>
+            <nav class="crumbs" aria-label="Caminho"><span>Criação</span><span id="cr-crumb">Novo registro</span></nav>
+            <h1>Registro da criação</h1>
+            <p class="page-sub">Acompanhe cada placa de ovos até a emergência dos adultos.</p>
+          </div>
+          <div class="head-actions"><button class="btn ghost" type="button" id="cr-novo-lote"><svg class="i"><use href="#i-plus"/></svg>Novo lote</button></div>
+        </div>
+        <div class="ftabs" role="tablist" aria-label="Registro da criação">
+          <button type="button" class="ftab" data-cr="novo" aria-selected="true">Novo registro</button>
+          <button type="button" class="ftab" data-cr="hist" aria-selected="false">Histórico do lote</button>
+        </div>
+        <form class="card narrow lote-form" id="cr-lote-form" novalidate hidden>
+          <h3>Novo lote e placa de ovos</h3>
+          <div class="row">
+            <label class="f"><span class="lbl">Código do lote</span><input type="text" id="nl-lote" placeholder="Ex.: L-027"></label>
+            <label class="f"><span class="lbl">Espécie / linhagem</span><input type="text" id="nl-especie" value="Aedes aegypti"></label>
+            <label class="f"><span class="lbl">Placa de ovos</span><input type="text" id="nl-placa" value="PL-01"></label>
+          </div>
+          <div class="row">
+            <label class="f"><span class="lbl">Início da eclosão</span><input type="date" id="nl-inicio"></label>
+            <label class="f"><span class="lbl">Ovos colocados (se souber)</span><input type="number" min="0" id="nl-ovos" inputmode="numeric"></label>
+          </div>
+          <p class="hint" style="margin:0">Para adicionar outra placa a um lote que já existe, use o mesmo código de lote.</p>
+          <div class="actions"><span class="err" id="nl-err" role="alert"></span><button class="btn ghost" type="button" id="nl-cancel">Cancelar</button><button class="btn" type="submit" id="nl-btn">Criar</button></div>
+        </form>
+        <div class="grid2 wide" data-crview="novo">
+          <form class="cr-form" id="cr-form" novalidate>
+            <div class="card">
+              <h3 class="step-h">1. Identificação</h3>
+              <div class="row two">
+                <label class="f"><span class="lbl">Lote</span><select id="cr-lote"></select></label>
+                <label class="f"><span class="lbl">Placa de ovos</span><select id="cr-placa"></select></label>
+              </div>
+              <div class="row two">
+                <label class="f"><span class="lbl">Espécie / linhagem</span><input type="text" id="cr-especie" readonly></label>
+                <label class="f"><span class="lbl">Início da eclosão</span><input type="date" id="cr-inicio"></label>
+              </div>
+              <div class="ovos-bar">
+                <b>Ovos colocados para eclosão: <span id="cr-ovos-v">não informado</span></b>
+                <button class="icon-btn sm" type="button" id="cr-ovos-ed" aria-label="Editar ovos colocados"><svg class="i"><use href="#i-edit"/></svg></button>
+                <span class="ovos-edit" id="cr-ovos-box" hidden><input type="number" min="0" id="cr-ovos" inputmode="numeric" aria-label="Ovos colocados"><button class="btn sm" type="button" id="cr-ovos-ok">Salvar</button></span>
+                <span class="hint">Informe a quantidade inicial quando conhecida.</span>
+              </div>
+            </div>
+            <div class="card">
+              <h3 class="step-h">2. Contagens desta observação</h3>
+              <p class="hint leg-sub">Informe apenas os novos indivíduos desde a última contagem.</p>
+              <div class="row">
+                <label class="f"><span class="lbl">Novas larvas</span><input type="number" min="0" id="cr-larvas" value="0" inputmode="numeric"></label>
+                <label class="f"><span class="lbl">Novas pupas</span><input type="number" min="0" id="cr-pupas" value="0" inputmode="numeric"></label>
+                <label class="f"><span class="lbl">Novos adultos</span><input type="number" min="0" id="cr-adultos" value="0" inputmode="numeric"></label>
+              </div>
+              <p class="lbl" style="margin:14px 0 6px">Sexo dos novos adultos</p>
+              <div class="row">
+                <label class="f"><span class="lbl soft">Machos</span><input type="number" min="0" id="cr-machos" value="0" inputmode="numeric"></label>
+                <label class="f"><span class="lbl soft">Fêmeas</span><input type="number" min="0" id="cr-femeas" value="0" inputmode="numeric"></label>
+                <label class="f"><span class="lbl soft">Não identificado</span><input type="number" min="0" id="cr-naoid" value="0" inputmode="numeric"></label>
+              </div>
+              <p class="sum-check" id="cr-soma"></p>
+            </div>
+            <div class="card">
+              <h3 class="step-h">3. Registro e observações</h3>
+              <div class="row">
+                <label class="f"><span class="lbl">Data</span><input type="date" id="cr-data"></label>
+                <label class="f"><span class="lbl">Horário</span><input type="time" id="cr-hora"></label>
+                <label class="f"><span class="lbl">Registrado por</span><input type="text" id="cr-resp" readonly></label>
+              </div>
+              <div class="row cr-last">
+                <label class="f"><span class="lbl">Observações / perdas</span><textarea id="cr-obs" placeholder="Registre mortalidade, transferências ou outras ocorrências…"></textarea></label>
+                <label class="f"><span class="lbl">Situação do lote</span>
+                  <select id="cr-sit"><option value="acompanhamento">Em acompanhamento</option><option value="encerrado">Encerrado</option><option value="descartado">Descartado</option></select>
+                </label>
+              </div>
+              <div class="actions"><span class="err" id="cr-err" role="alert"></span><button class="btn ghost" type="button" id="cr-cancel">Cancelar</button><button class="btn" type="submit" id="cr-btn">Salvar registro</button></div>
+            </div>
+          </form>
+          <aside class="aside">
+            <div class="card">
+              <div class="card-head"><div><h3 style="margin:0">Resumo do lote</h3><p class="card-sub" id="cr-res-sub"></p></div><span class="tag-soft" id="cr-previa" hidden>Prévia após salvar</span></div>
+              <div class="lote-sum" id="cr-sum"></div>
+              <h4 class="mini-h">Taxas parciais</h4>
+              <div class="rates" id="cr-taxas"></div>
+              <p class="hint" id="cr-taxa-nota"></p>
+            </div>
+            <div class="card">
+              <h3>Últimos registros</h3>
+              <div class="rates" id="cr-ult"></div>
+              <button class="link" type="button" id="cr-ver-hist" style="margin-top:12px">Ver histórico completo →</button>
+            </div>
+          </aside>
+        </div>
+        <div class="card" data-crview="hist" hidden>
+          <div class="bar tight">
+            <label class="f inline"><span class="lbl">Lote e placa</span><select id="cr-hist-placa"></select></label>
+          </div>
+          <div class="scroll"><table class="crhist" id="cr-hist"></table></div>
+        </div>
+      </section>
+
+      <!-- AGENDAMENTOS (administradores) -->
+      <section id="view-agendamentos" role="tabpanel" aria-labelledby="tab-agendamentos" hidden>
+        <div class="page-head">
+          <div>
+            <nav class="crumbs" aria-label="Caminho"><span>Agendamentos</span><span>Nova atividade</span></nav>
+            <h1>Agendar atividade <span class="badge"><svg class="i"><use href="#i-lock"/></svg>Somente administradores</span></h1>
+            <p class="page-sub">Organize a rotina e atribua os responsáveis.</p>
+          </div>
+        </div>
+        <div class="grid2 wide">
+          <form class="card" id="ag-form" novalidate>
+            <fieldset class="first"><legend class="step"><span class="num">1</span>Atividade</legend>
+              <div class="opts" id="ag-tipo">
+                <label class="opt"><input type="radio" name="ag-tipo" value="alimentacao" checked><span class="opt-ic"><svg class="i"><use href="#i-fork"/></svg></span><span class="opt-t"><b>Alimentação</b><span>Fornecimento de alimento para os insetos.</span></span></label>
+                <label class="opt"><input type="radio" name="ag-tipo" value="verificacao"><span class="opt-ic"><svg class="i"><use href="#i-clip"/></svg></span><span class="opt-t"><b>Verificação</b><span>Inspeção e conferência das condições das gaiolas.</span></span></label>
+              </div>
+              <label class="f" style="margin-top:14px"><span class="lbl">Estágio</span><select id="ag-estagio"></select></label>
+            </fieldset>
+            <fieldset><legend class="step"><span class="num">2</span>Gaiolas</legend>
+              <p class="hint leg-sub">Selecione uma ou mais gaiolas para esta atividade.</p>
+              <div class="picker">
+                <select id="ag-gsel" aria-label="Selecionar gaiola"></select>
+                <button class="btn ghost" type="button" id="ag-gadd"><svg class="i"><use href="#i-plus"/></svg>Adicionar gaiolas</button>
+                <span class="hint picker-n" id="ag-gn"></span>
+              </div>
+              <div class="tokens" id="ag-gchips"></div>
+            </fieldset>
+            <fieldset><legend class="step"><span class="num">3</span>Quando e quem</legend>
+              <div class="row two">
+                <label class="f"><span class="lbl">Data</span><input type="date" id="ag-data"></label>
+                <label class="f"><span class="lbl">Horário</span><input type="time" id="ag-hora" value="09:00"></label>
+              </div>
+              <div class="row two" style="margin-top:14px">
+                <label class="f"><span class="lbl">Responsável</span><select id="ag-resp"></select></label>
+                <label class="f"><span class="lbl">Repetição</span>
+                  <select id="ag-rep">
+                    <option value="0">Não repetir</option>
+                    <option value="d7">Todos os dias (7 dias)</option>
+                    <option value="u10">Dias úteis (2 semanas)</option>
+                    <option value="s4">Toda semana (4 semanas)</option>
+                    <option value="s8">Toda semana (8 semanas)</option>
+                  </select>
+                </label>
+              </div>
+              <label class="f" style="margin-top:14px"><span class="lbl">Observações</span><textarea id="ag-obs" placeholder="Orientações para a equipe…" rows="2"></textarea></label>
+            </fieldset>
+            <div class="actions split"><span class="err" id="ag-err" role="alert"></span><button class="btn ghost" type="button" id="ag-cancel">Cancelar</button><button class="btn grow" type="submit" id="ag-btn">Agendar atividade</button></div>
+          </form>
+          <aside class="aside">
+            <div class="card">
+              <h3>Resumo do agendamento</h3>
+              <span class="tipo-pill" id="ags-tipo"></span>
+              <div class="kv-list">
+                <div><svg class="i"><use href="#i-cal"/></svg><span id="ags-data">—</span></div>
+                <div><svg class="i"><use href="#i-clock"/></svg><span id="ags-hora">—</span></div>
+                <div><svg class="i"><use href="#i-user"/></svg><span id="ags-resp">—</span></div>
+                <div><svg class="i"><use href="#i-layers"/></svg><span id="ags-estagio">—</span></div>
+              </div>
+              <h4 class="mini-h">Gaiolas incluídas</h4>
+              <div class="check-list" id="ags-gaiolas"></div>
+              <div class="info-box" id="ags-info"><svg class="i"><use href="#i-info"/></svg><div><b id="ags-info-t"></b><span>A execução poderá ser registrada por gaiola.</span></div></div>
+            </div>
+          </aside>
+        </div>
+        <div class="card sec">
+          <div class="card-head"><h3 style="margin:0">Próximos agendamentos</h3>
+            <label class="chk"><input type="checkbox" id="ag-ver-passados">Mostrar anteriores</label></div>
+          <div class="scroll"><table class="ag-list" id="ag-list"></table></div>
+        </div>
+      </section>
+
+      <!-- ESCALA DA EQUIPE (administradores) -->
+      <section id="view-escala" role="tabpanel" aria-labelledby="tab-escala" hidden>
+        <div class="page-head">
+          <div>
+            <nav class="crumbs" aria-label="Caminho"><span>Administração</span><span>Escala da equipe</span></nav>
+            <h1>Escala da equipe <span class="badge"><svg class="i"><use href="#i-lock"/></svg>Somente administradores</span></h1>
+            <p class="page-sub">Defina quem trabalha em cada dia e distribua as atividades.</p>
+          </div>
+        </div>
+        <div class="grid2 wide">
+          <div class="es-left">
+            <div class="card">
+              <div class="es-top">
+                <button class="icon-btn" type="button" id="es-prev" aria-label="Semana anterior"><svg class="i"><use href="#i-left"/></svg></button>
+                <h2 id="es-title"></h2>
+                <button class="icon-btn" type="button" id="es-next" aria-label="Próxima semana"><svg class="i"><use href="#i-right"/></svg></button>
+                <button class="btn ghost sm es-hoje" type="button" id="es-now">Hoje</button>
+              </div>
+              <div class="es-filters">
+                <label class="search"><svg class="i"><use href="#i-search"/></svg><input type="text" id="es-busca" placeholder="Buscar colaborador…" aria-label="Buscar colaborador"></label>
+                <select id="es-filtro" aria-label="Filtrar equipe"><option value="">Toda a equipe</option><option value="escalados">Escalados na semana</option></select>
+              </div>
+              <div class="scroll es-wrap"><table class="es-grid" id="es-grid"></table></div>
+              <div class="legend es-legend"><span><svg class="i"><use href="#i-info"/></svg>Clique em um dia para montar a escala do colaborador.</span><span class="lg-r"><span class="sw on"></span>Dia escalado</span><span><span class="sw plus">+</span>Sem escala</span></div>
+            </div>
+            <div class="card sec">
+              <h3 id="es-dia-h">Atividades do dia</h3>
+              <div class="act-list" id="es-dia"></div>
+            </div>
+          </div>
+          <aside class="aside">
+            <form class="card es-plan" id="es-form" novalidate>
+              <div><h3 style="margin:0">Planejar dia</h3><p class="card-sub" id="es-plan-sub"></p></div>
+              <div class="row two">
+                <label class="f"><span class="lbl">Colaborador</span><select id="es-colab"></select></label>
+                <label class="f"><span class="lbl">Data</span><input type="date" id="es-data"></label>
+              </div>
+              <div>
+                <p class="lbl" style="margin:0 0 6px">Horário de trabalho</p>
+                <div class="row two">
+                  <label class="f"><span class="lbl soft">Entrada</span><input type="time" id="es-ent"></label>
+                  <label class="f"><span class="lbl soft">Saída</span><input type="time" id="es-sai"></label>
+                </div>
+              </div>
+              <div>
+                <p class="lbl" style="margin:0 0 8px">Atividades do dia <span class="count-pill" id="es-nat">0</span></p>
+                <div class="acc" id="es-ativs"></div>
+                <button class="btn ghost wide-ghost" type="button" id="es-add-at"><svg class="i"><use href="#i-plus"/></svg>Adicionar atividade</button>
+              </div>
+              <label class="f"><span class="lbl">Repetir escala</span>
+                <select id="es-rep"><option value="0">Não repetir</option><option value="4">Mesmo dia da semana, próximas 4 semanas</option><option value="8">Mesmo dia da semana, próximas 8 semanas</option></select>
+              </label>
+              <p class="hint ic-line"><svg class="i"><use href="#i-cal"/></svg>As atividades aparecerão no calendário do colaborador.</p>
+              <p class="err" id="es-err" role="alert"></p>
+              <div class="actions split">
+                <button class="linkbtn danger" type="button" id="es-del" hidden>Remover escala do dia</button>
+                <button class="btn ghost" type="button" id="es-cancel">Cancelar</button>
+                <button class="btn grow" type="submit" id="es-btn">Salvar escala</button>
+              </div>
+            </form>
+          </aside>
+        </div>
+      </section>
+
+      <!-- RELATÓRIO -->
       <section id="view-relatorio" role="tabpanel" aria-labelledby="tab-relatorio" hidden>
         <div class="page-head">
           <div>
@@ -285,7 +637,7 @@
         </div>
       </section>
 
-      <!-- TELA 4: desenvolvedor -->
+      <!-- DESENVOLVEDOR -->
       <section id="view-dev" role="tabpanel" aria-labelledby="tab-dev" hidden>
         <div class="page-head">
           <div>
