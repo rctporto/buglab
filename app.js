@@ -345,7 +345,7 @@ $("#db-data").onchange=e=>{ if(e.target.value){ dbData=e.target.value; renderDas
 $("#db-mes").onchange=e=>{ dbMes=e.target.value; renderDashboard(); };
 $("#db-especie").onchange=()=>{ dbPlaca=""; renderDashboard(); };
 $("#db-placa").onchange=e=>{ dbPlaca=e.target.value; renderDashboard(); };
-$("#db-ver-cal").onclick=()=>{ calAnchor=dbData; calMode="semana"; show("calendario"); };
+$("#db-ver-cal").onclick=()=>{ calAnchor=dbData; calDay=dbData; calSel=null; calMode="mes"; show("calendario"); };
 const pct = (a,b) => b ? Math.round(a/b*100)+"%" : "—";
 function convChart(p,t){
   const rows=[["Ovos",p.ovos_iniciais],["Larvas",t.larvas],["Pupas",t.pupas],["Adultos",t.adultos]];
@@ -391,7 +391,7 @@ function emergChart(placaId, mes){
 }
 
 /* =================== calendário =================== */
-let calMode="semana", calAnchor=null, calSel=null;
+let calMode="mes", calAnchor=null, calSel=null, calDay=null;
 function renderCalendar(){
   if(!calAnchor) calAnchor=todayIso();
   const t=todayIso();
@@ -401,6 +401,7 @@ function renderCalendar(){
   ]:[]).map(statCard));
   $$("#cal-modo button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.cal===calMode)));
   const f=$("#cal-filtro").value;
+  $("#cal-now").textContent = calMode==="semana" ? "Esta semana" : "Este mês";
   if(calMode==="semana") renderWeek(f); else renderMonth(f);
   renderCalSide();
 }
@@ -415,7 +416,7 @@ function renderWeek(f){
   const horas=acts.filter(a=>a.hora).map(a=>Number(a.hora.slice(0,2)));
   const h0=Math.min(8,...horas), h1=Math.max(17,...horas);
   const tbl=el("table",{class:"wkcal"});
-  tbl.append(el("thead",{},el("tr",{},el("th",{class:"hcol"}),...days.map(d=>{ const dt=parse(d); return el("th",{class:d===t?"today":null},el("span",{class:"dow",text:DOW[dt.getDay()]}),el("b",{text:pad(dt.getDate())})); }))));
+  tbl.append(el("thead",{},el("tr",{},el("th",{class:"hcol"}),...days.map(d=>{ const dt=parse(d); return el("th",{class:((d===t?"today":"")+(d===calDay?" picked":""))||null},wkDay(d,dt)); }))));
   const tb=el("tbody");
   const linha=(rot, pega)=>{ const tr=el("tr",{},el("th",{class:"hcol mono",text:rot}));
     days.forEach(d=>{ const td=el("td",{class:d===t?"today":null}); pega(d).forEach(a=>td.append(evBtn(a))); tr.append(td); }); tb.append(tr); };
@@ -433,29 +434,51 @@ function evBtn(a){
   b.onclick=()=>{ calSel=actKey(a); renderCalendar(); if(innerWidth<1100) $("#cal-side").scrollIntoView({behavior:"smooth",block:"nearest"}); };
   return b;
 }
+function wkDay(d,dt){ const b=el("button",{type:"button",class:"wk-day","aria-label":`Ver o dia ${brFull(d)}`},el("span",{class:"dow",text:DOW[dt.getDay()]}),el("b",{text:pad(dt.getDate())})); b.onclick=()=>pickDay(d); return b; }
+function sideFocus(){ if(innerWidth<1100) $("#cal-side").scrollIntoView({behavior:"smooth",block:"nearest"}); }
+function pickDay(ds){ calDay=ds; calAnchor=ds; calSel=null; renderCalendar(); sideFocus(); }
+const byHora=(a,b)=>(a.hora||"99").localeCompare(b.hora||"99");
 function renderMonth(f){
   const ym=calAnchor.slice(0,7); const [y,m]=ym.split("-").map(Number);
   $("#cal-title").textContent=`${MESES[m-1]} de ${y}`;
   const first=new Date(y,m-1,1); const lead=(first.getDay()+6)%7; const start=addDays(iso(first),-lead);
   const weeks=Math.ceil((lead+new Date(y,m,0).getDate())/7);
   const acts=filterActs(activities(start,addDays(start,weeks*7-1)),f); const t=todayIso();
-  const cal=el("div",{class:"cal"},...["seg","ter","qua","qui","sex","sáb","dom"].map(d=>el("div",{class:"dh",text:d})));
+  const cal=el("div",{class:"cal mcal"},...["seg","ter","qua","qui","sex","sáb","dom"].map(d=>el("div",{class:"dh",text:d})));
   for(let i=0;i<weeks*7;i++){
-    const ds=addDays(start,i); const dt=parse(ds); const as=acts.filter(a=>a.data===ds); const other=dt.getMonth()!==m-1;
-    const b=el("button",{type:"button",class:"day-btn"+(other?" other":"")+(ds===t?" today":""),"aria-label":`${DOWL[dt.getDay()]}, ${brFull(ds)}: ${as.length} atividade(s)`});
-    b.append(el("div",{class:"n"},el("span",{text:String(dt.getDate())}),as.length?el("span",{class:"cnt",text:`${as.filter(feita).length}/${as.length}`}):null));
-    as.slice(0,3).forEach(a=>b.append(el("div",{class:`mini-ev ${a.tipo==="verificacao"?"ver":"ali"}${feita(a)?" done":""}`,text:`${a.hora||"—"} ${TIPO_L[a.tipo]}`})));
-    if(as.length>3) b.append(el("div",{class:"more-n",text:`+${as.length-3}`}));
-    b.onclick=()=>{ calAnchor=ds; calMode="semana"; calSel=null; renderCalendar(); };
-    cal.append(b);
+    const ds=addDays(start,i); const dt=parse(ds); const other=dt.getMonth()!==m-1;
+    const as=acts.filter(a=>a.data===ds).sort(byHora);
+    const c=el("div",{class:"day-btn"+(other?" other":"")+(ds===t?" today":"")+(ds===calDay?" picked":"")});
+    const nb=el("button",{type:"button",class:"n","aria-label":`${DOWL[dt.getDay()]}, ${brFull(ds)}: ${as.length} atividade(s). Ver o dia`},
+      el("span",{text:String(dt.getDate())}),as.length?el("span",{class:"cnt",text:`${as.filter(feita).length}/${as.length}`}):null);
+    nb.onclick=e=>{ e.stopPropagation(); pickDay(ds); };
+    c.append(nb);
+    as.forEach(a=>{ const b=el("button",{type:"button",class:`mini-ev ${a.tipo==="verificacao"?"ver":"ali"}${feita(a)?" done":""}${a.status==="atrasada"?" late":""}${calSel===actKey(a)?" sel":""}`,
+        title:`${a.hora||"Sem horário"} · ${actTitle(a)}${a.resp?" · "+a.resp:""}`,text:`${a.hora||"—"} ${a.gaiolas.length?a.gaiolas.map(g=>g.replace(/^Gaiola\s*/i,"G")).join(", "):ESTAGIO_L[a.estagio]}`});
+      b.onclick=e=>{ e.stopPropagation(); calDay=ds; calSel=actKey(a); renderCalendar(); sideFocus(); };
+      c.append(b); });
+    c.onclick=()=>pickDay(ds);
+    cal.append(c);
   }
   $("#cal-main").replaceChildren(cal);
+}
+function renderDayList(ds){
+  const dt=parse(ds); const as=filterActs(activities(ds,ds),$("#cal-filtro").value).sort(byHora);
+  const out=[el("div",{class:"side-h day"},el("h3",{text:`${cap(DOWL[dt.getDay()])}, ${dt.getDate()} de ${MESES[dt.getMonth()].toLowerCase()}`}),
+    el("span",{class:"hint",text:as.length?`${as.filter(feita).length} de ${as.length} concluída(s)`:"Sem atividades"}))];
+  if(as.length) out.push(el("div",{class:"day-list"},...as.map(a=>{ const b=el("button",{type:"button",class:`day-it ${a.tipo==="verificacao"?"ver":"ali"}`});
+    b.append(el("span",{class:"hr",text:a.hora||"—"}),el("span",{class:"tx"},el("b",{text:TIPO_L[a.tipo]+" · "+(gaiolasTxt(a.gaiolas)||ESTAGIO_L[a.estagio])}),el("small",{text:[a.resp,STATUS_L[a.status]].filter(Boolean).join(" · ")})));
+    b.onclick=()=>{ calSel=actKey(a); renderCalendar(); }; return b; })));
+  else out.push(el("p",{class:"hint",text:"Nenhuma atividade registrada ou agendada neste dia."}));
+  if(calMode!=="semana"){ const w=el("button",{class:"btn ghost wide-ghost",type:"button",text:"Ver a semana deste dia"}); w.onclick=()=>{ calAnchor=ds; calMode="semana"; renderCalendar(); }; out.push(w); }
+  if(can("registrar")){ const r=el("button",{class:"btn wide",type:"button",text:"Registrar atividade neste dia"}); r.onclick=()=>openRegistro(ds); out.push(r); }
+  return out;
 }
 function renderCalSide(){
   const side=$("#cal-side");
   const ini = calMode==="semana" ? mondayOf(calAnchor) : addDays(calAnchor.slice(0,7)+"-01",-7);
   const a = calSel && activities(addDays(ini,-40), addDays(ini,80)).find(x=>actKey(x)===calSel);
-  if(!a){ side.replaceChildren(el("div",{class:"side-empty"},ico("info"),el("p",{text:"Clique em uma atividade para ver os detalhes e registrar a execução."}))); return; }
+  if(!a){ side.replaceChildren(...(calDay?renderDayList(calDay):[el("div",{class:"side-empty"},ico("info"),el("p",{text:"Clique em um dia para ver tudo o que aconteceu nele, ou em uma atividade para ver os detalhes."}))])); return; }
   const dt=parse(a.data);
   const head=el("div",{class:"side-h "+(a.tipo==="verificacao"?"ver":"ali")},el("h3",{text:TIPO_L[a.tipo]}),statusPill(a.status));
   const kv=el("div",{class:"kv-list"},
@@ -468,17 +491,18 @@ function renderCalSide(){
   const sit={}; rs.forEach(r=>regGaiolas(r).forEach(g=>sit[g.gaiola]=g));
   const gl=el("div",{class:"g-list"},...a.gaiolas.map(g=>el("div",{class:sit[g]?(sit[g].situacao==="realizada"?"ok":"nok"):null},el("span",{text:g}),sit[g]?el("small",{text:sit[g].situacao==="realizada"?"Realizada":"Não realizada"+(sit[g].obs?": "+sit[g].obs:"")}):null)));
   const out=[head,kv,kv2,el("h4",{class:"mini-h",text:"Gaiolas incluídas"}),gl];
+  if(calDay===a.data){ const v=el("button",{class:"linkbtn",type:"button",text:"← Todas as atividades do dia"}); v.onclick=()=>{ calSel=null; renderCalendar(); }; out.unshift(v); }
   if(a.obs) out.push(el("p",{class:"side-obs",text:a.obs}));
   if(a.k==="ag" && !feita(a) && can("registrar")){ const b=el("button",{class:"btn wide",type:"button",text:"Registrar execução"}); b.onclick=()=>openRegistro(a.data, a.id); out.push(b); }
   if(rs.length){ const r=rs[0]; const b=el("button",{class:"btn ghost wide-ghost",type:"button",text:canEditRec(r)?"Ver e editar registro":"Ver registro do dia"}); b.onclick=()=>{ openRegistro(r.data); if(canEditRec(r)) startEdit(r); }; out.push(b); }
   if(a.k==="ag" && isDev()){ const d=el("button",{class:"linkbtn danger",type:"button",text:"Excluir agendamento"}); d.onclick=()=>confirmar(d,"Excluir este agendamento?",async()=>{ await excluirAgendas([a.id]); calSel=null; }); out.push(d); }
   side.replaceChildren(...out);
 }
-$$("#cal-modo button").forEach(b=>b.onclick=()=>{ calMode=b.dataset.cal; renderCalendar(); });
+$$("#cal-modo button").forEach(b=>b.onclick=()=>{ calMode=b.dataset.cal; if(calDay) calAnchor=calDay; renderCalendar(); });
 $("#cal-filtro").onchange=renderCalendar;
 $("#cal-prev").onclick=()=>{ calAnchor = calMode==="semana" ? addDays(calAnchor,-7) : addMonths(calAnchor.slice(0,7),-1)+"-01"; renderCalendar(); };
 $("#cal-next").onclick=()=>{ calAnchor = calMode==="semana" ? addDays(calAnchor,7) : addMonths(calAnchor.slice(0,7),1)+"-01"; renderCalendar(); };
-$("#cal-now").onclick=()=>{ calAnchor=todayIso(); renderCalendar(); };
+$("#cal-now").onclick=()=>{ calAnchor=todayIso(); calDay=todayIso(); calSel=null; renderCalendar(); };
 $("#cal-add").onclick=()=>openRegistro(todayIso());
 function confirmar(btn, pergunta, acao){
   const box=el("span",{class:"confirm"},el("span",{class:"hint",text:pergunta}));
@@ -596,7 +620,7 @@ $("#f-agenda").onchange=e=>{ if(e.target.value) aplicarAgenda(e.target.value); e
 $("#f-gadd").onclick=()=>{ const v=$("#f-gsel").value; if(!v) return; fG.push({gaiola:v,situacao:"realizada",obs:""}); renderG(); };
 $("#f-gsel").onchange=()=>$("#f-gadd").click();
 $("#f-gall").onclick=()=>{ cfg.alvos.forEach(a=>{ if(!fG.some(g=>g.gaiola===a)) fG.push({gaiola:a,situacao:"realizada",obs:""}); }); renderG(); };
-$("#reg-back").onclick=()=>{ const d=$("#f-data").value; if(d) calAnchor=d; show("calendario"); };
+$("#reg-back").onclick=()=>{ const d=$("#f-data").value; if(d){ calAnchor=d; calDay=d; } show("calendario"); };
 $("#d-prev").onclick=()=>{ if(editingId) cancelEdit(); resetForm(addDays($("#f-data").value||todayIso(),-1)); };
 $("#d-next").onclick=()=>{ if(editingId) cancelEdit(); resetForm(addDays($("#f-data").value||todayIso(),1)); };
 function renderDay(){
@@ -984,7 +1008,7 @@ function filtered(){
 function renderReport(){
   if(!rAnchor) rAnchor=todayIso();
   const [a,b]=periodRange();
-  $$(".seg button").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.mode===rMode)));
+  $$("#r-modo button").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.mode===rMode)));
   $("#rel-nav").hidden = rMode==="tudo";
   if(rMode==="semana") $("#rel-title").textContent=`Semana ${br(a)} – ${br(b)}`;
   else if(rMode==="mes"){ const [y,m]=a.split("-").map(Number); $("#rel-title").textContent=`${MESES[m-1]} de ${y}`; }
@@ -1070,7 +1094,7 @@ function entry(r){
   }
   return el("div",{class:"entry"},el("div",{class:"t",text:r.hora||"--:--"}),body,acts);
 }
-$$(".seg button").forEach(b=>b.onclick=()=>{rMode=b.dataset.mode;renderReport();});
+$$("#r-modo button").forEach(b=>b.onclick=()=>{rMode=b.dataset.mode;renderReport();});
 $("#r-resp").onchange=renderReport; $("#r-alvo").onchange=renderReport;
 $("#rel-prev").onclick=()=>{rPicked=true;rAnchor= rMode==="mes"?addMonths(rAnchor.slice(0,7),-1)+"-01":addDays(rAnchor,-7);renderReport();};
 $("#rel-next").onclick=()=>{rPicked=true;rAnchor= rMode==="mes"?addMonths(rAnchor.slice(0,7),1)+"-01":addDays(rAnchor,7);renderReport();};
