@@ -251,6 +251,7 @@ const tabAllowed = v => ["dev","dashboard","agendamentos","escala"].includes(v) 
 function show(view){
   if(!tabAllowed(view)) view="calendario";
   current=view;
+  if(view!=="calendario"){ calOpen=false; hidePop(); }
   for(const v of VIEWS){ $("#view-"+v).hidden = v!==view; $("#tab-"+v).setAttribute("aria-selected", String(v===view)); }
   try{ history.replaceState(null,"","#"+view); }catch(e){}
   renderCurrent(); window.scrollTo({top:0});
@@ -391,7 +392,7 @@ function emergChart(placaId, mes){
 }
 
 /* =================== calendário =================== */
-let calMode="mes", calAnchor=null, calSel=null, calDay=null;
+let calMode="mes", calAnchor=null, calSel=null, calDay=null, calOpen=false;
 function renderCalendar(){
   if(!calAnchor) calAnchor=todayIso();
   const t=todayIso();
@@ -431,12 +432,29 @@ function evBtn(a){
     "aria-label":`${actTitle(a)}, ${a.hora||"sem horário"}, ${STATUS_L[a.status]}`});
   b.append(el("b",{},feita(a)?ico("check"):null,document.createTextNode(TIPO_L[a.tipo])),
     el("span",{text:[gaiolasTxt(a.gaiolas)||ESTAGIO_L[a.estagio],STATUS_L[a.status]].join(" · ")}));
-  b.onclick=()=>{ calSel=actKey(a); renderCalendar(); if(innerWidth<1100) $("#cal-side").scrollIntoView({behavior:"smooth",block:"nearest"}); };
+  b.onclick=()=>{ calSel=actKey(a); calDay=a.data; calOpen=true; renderCalendar(); };
   return b;
 }
 function wkDay(d,dt){ const b=el("button",{type:"button",class:"wk-day","aria-label":`Ver o dia ${brFull(d)}`},el("span",{class:"dow",text:DOW[dt.getDay()]}),el("b",{text:pad(dt.getDate())})); b.onclick=()=>pickDay(d); return b; }
-function sideFocus(){ if(innerWidth<1100) $("#cal-side").scrollIntoView({behavior:"smooth",block:"nearest"}); }
-function pickDay(ds){ calDay=ds; calAnchor=ds; calSel=null; renderCalendar(); sideFocus(); }
+function pickDay(ds){ hidePop(); calDay=ds; calAnchor=ds; calSel=null; calOpen=true; renderCalendar(); }
+const canHover = matchMedia("(hover:hover) and (pointer:fine)");
+function hidePop(){ const p=$("#cal-pop"); if(p) p.hidden=true; }
+function showPop(cell, ds, as){
+  const p=$("#cal-pop"); const dt=parse(ds);
+  const items = as.length ? as.map(a=>el("div",{class:`pop-it ${a.tipo==="verificacao"?"ver":"ali"}`},
+      el("div",{class:"pop-l1"},el("span",{class:"hr",text:a.hora||"—"}),el("b",{text:`${TIPO_L[a.tipo]} · ${gaiolasTxt(a.gaiolas)||ESTAGIO_L[a.estagio]}`}),statusPill(a.status)),
+      el("div",{class:"pop-l2",text:[a.resp, a.k==="reg"&&a.reg&&a.reg.atividades.length?a.reg.atividades.map(x=>ATIV_L[x]||x).join(", "):""].filter(Boolean).join(" · ")}),
+      a.obs?el("div",{class:"pop-obs",text:a.obs.length>160?a.obs.slice(0,157)+"…":a.obs}):null))
+    : [el("p",{class:"hint",text:"Nenhuma atividade neste dia."})];
+  p.replaceChildren(el("div",{class:"pop-h"},el("b",{text:`${cap(DOWL[dt.getDay()])}, ${dt.getDate()} de ${MESES[dt.getMonth()].toLowerCase()}`}),
+      el("span",{class:"hint",text:as.length?`${as.filter(feita).length}/${as.length} concluídas`:""})),
+    el("div",{class:"pop-list"},...items), el("p",{class:"pop-tip",text:"Clique no dia para abrir os detalhes"}));
+  p.hidden=false;
+  const r=cell.getBoundingClientRect(), w=p.offsetWidth, h=p.offsetHeight, m=10;
+  let x = r.right+m; if(x+w > innerWidth-m) x = r.left-w-m; if(x < m) x = Math.max(m, Math.min(innerWidth-w-m, r.left));
+  let y = r.top; if(y+h > innerHeight-m) y = Math.max(m, innerHeight-h-m);
+  p.style.left=x+"px"; p.style.top=y+"px";
+}
 const byHora=(a,b)=>(a.hora||"99").localeCompare(b.hora||"99");
 function renderMonth(f){
   const ym=calAnchor.slice(0,7); const [y,m]=ym.split("-").map(Number);
@@ -454,10 +472,12 @@ function renderMonth(f){
     nb.onclick=e=>{ e.stopPropagation(); pickDay(ds); };
     c.append(nb);
     as.forEach(a=>{ const b=el("button",{type:"button",class:`mini-ev ${a.tipo==="verificacao"?"ver":"ali"}${feita(a)?" done":""}${a.status==="atrasada"?" late":""}${calSel===actKey(a)?" sel":""}`,
-        title:`${a.hora||"Sem horário"} · ${actTitle(a)}${a.resp?" · "+a.resp:""}`,text:`${a.hora||"—"} ${a.gaiolas.length?a.gaiolas.map(g=>g.replace(/^Gaiola\s*/i,"G")).join(", "):ESTAGIO_L[a.estagio]}`});
-      b.onclick=e=>{ e.stopPropagation(); calDay=ds; calSel=actKey(a); renderCalendar(); sideFocus(); };
+        title:`${a.hora||"Sem horário"} · ${actTitle(a)}${a.resp?" · "+a.resp:""}`,text:`${a.hora||"—"} ${TIPO_L[a.tipo]} · ${a.gaiolas.length?a.gaiolas.map(g=>g.replace(/^Gaiola\s*/i,"G")).join(", "):ESTAGIO_L[a.estagio]}`});
+      b.onclick=e=>{ e.stopPropagation(); hidePop(); calDay=ds; calSel=actKey(a); calOpen=true; renderCalendar(); };
       c.append(b); });
     c.onclick=()=>pickDay(ds);
+    c.onmouseenter=()=>{ if(canHover.matches) showPop(c, ds, as); };
+    c.onmouseleave=hidePop;
     cal.append(c);
   }
   $("#cal-main").replaceChildren(cal);
@@ -470,15 +490,18 @@ function renderDayList(ds){
     b.append(el("span",{class:"hr",text:a.hora||"—"}),el("span",{class:"tx"},el("b",{text:TIPO_L[a.tipo]+" · "+(gaiolasTxt(a.gaiolas)||ESTAGIO_L[a.estagio])}),el("small",{text:[a.resp,STATUS_L[a.status]].filter(Boolean).join(" · ")})));
     b.onclick=()=>{ calSel=actKey(a); renderCalendar(); }; return b; })));
   else out.push(el("p",{class:"hint",text:"Nenhuma atividade registrada ou agendada neste dia."}));
-  if(calMode!=="semana"){ const w=el("button",{class:"btn ghost wide-ghost",type:"button",text:"Ver a semana deste dia"}); w.onclick=()=>{ calAnchor=ds; calMode="semana"; renderCalendar(); }; out.push(w); }
+  if(calMode!=="semana"){ const w=el("button",{class:"btn ghost wide-ghost",type:"button",text:"Ver a semana deste dia"}); w.onclick=()=>{ calAnchor=ds; calMode="semana"; calOpen=false; renderCalendar(); }; out.push(w); }
   if(can("registrar")){ const r=el("button",{class:"btn wide",type:"button",text:"Registrar atividade neste dia"}); r.onclick=()=>openRegistro(ds); out.push(r); }
   return out;
 }
+function closeCal(){ calOpen=false; calSel=null; renderCalendar(); }
 function renderCalSide(){
-  const side=$("#cal-side");
+  const side=$("#cal-side"); const modal=$("#cal-modal");
+  modal.hidden=!calOpen;
+  if(!calOpen) return;
   const ini = calMode==="semana" ? mondayOf(calAnchor) : addDays(calAnchor.slice(0,7)+"-01",-7);
   const a = calSel && activities(addDays(ini,-40), addDays(ini,80)).find(x=>actKey(x)===calSel);
-  if(!a){ side.replaceChildren(...(calDay?renderDayList(calDay):[el("div",{class:"side-empty"},ico("info"),el("p",{text:"Clique em um dia para ver tudo o que aconteceu nele, ou em uma atividade para ver os detalhes."}))])); return; }
+  if(!a){ if(!calDay){ modal.hidden=true; calOpen=false; return; } side.replaceChildren(...renderDayList(calDay)); return; }
   const dt=parse(a.data);
   const head=el("div",{class:"side-h "+(a.tipo==="verificacao"?"ver":"ali")},el("h3",{text:TIPO_L[a.tipo]}),statusPill(a.status));
   const kv=el("div",{class:"kv-list"},
@@ -502,8 +525,12 @@ $$("#cal-modo button").forEach(b=>b.onclick=()=>{ calMode=b.dataset.cal; if(calD
 $("#cal-filtro").onchange=renderCalendar;
 $("#cal-prev").onclick=()=>{ calAnchor = calMode==="semana" ? addDays(calAnchor,-7) : addMonths(calAnchor.slice(0,7),-1)+"-01"; renderCalendar(); };
 $("#cal-next").onclick=()=>{ calAnchor = calMode==="semana" ? addDays(calAnchor,7) : addMonths(calAnchor.slice(0,7),1)+"-01"; renderCalendar(); };
-$("#cal-now").onclick=()=>{ calAnchor=todayIso(); calDay=todayIso(); calSel=null; renderCalendar(); };
+$("#cal-now").onclick=()=>{ calAnchor=todayIso(); calSel=null; renderCalendar(); };
 $("#cal-add").onclick=()=>openRegistro(todayIso());
+$("#cal-modal-x").onclick=closeCal;
+$("#cal-modal").addEventListener("click",e=>{ if(e.target.id==="cal-modal") closeCal(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && calOpen && current==="calendario") closeCal(); });
+addEventListener("scroll",hidePop,{passive:true});
 function confirmar(btn, pergunta, acao){
   const box=el("span",{class:"confirm"},el("span",{class:"hint",text:pergunta}));
   const ok=el("button",{class:"linkbtn danger",type:"button",text:"Confirmar"}), no=el("button",{class:"linkbtn",type:"button",text:"Cancelar"});
