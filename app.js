@@ -472,7 +472,7 @@ function renderMonth(f){
     nb.onclick=e=>{ e.stopPropagation(); pickDay(ds); };
     c.append(nb);
     as.forEach(a=>{ const b=el("button",{type:"button",class:`mini-ev ${a.tipo==="verificacao"?"ver":"ali"}${feita(a)?" done":""}${a.status==="atrasada"?" late":""}${calSel===actKey(a)?" sel":""}`,
-        title:`${a.hora||"Sem horário"} · ${actTitle(a)}${a.resp?" · "+a.resp:""}`,text:`${a.hora||"—"} ${TIPO_L[a.tipo]} · ${a.gaiolas.length?a.gaiolas.map(g=>g.replace(/^Gaiola\s*/i,"G")).join(", "):ESTAGIO_L[a.estagio]}`});
+        title:`${a.hora||"Sem horário"} · ${actTitle(a)}${a.resp?" · "+a.resp:""}`,text:`${feita(a)?"✓ ":""}${a.hora?a.hora+" ":""}${a.tipo==="verificacao"?"Verif.":"Alim."} ${a.gaiolas.length?a.gaiolas.map(g=>g.replace(/^Gaiola\s*/i,"G")).join(" "):ESTAGIO_L[a.estagio]}`});
       b.onclick=e=>{ e.stopPropagation(); hidePop(); calDay=ds; calSel=actKey(a); calOpen=true; renderCalendar(); };
       c.append(b); });
     c.onclick=()=>pickDay(ds);

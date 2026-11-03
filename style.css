@@ -696,3 +696,7 @@ legend.step{display:flex;align-items:center;gap:12px;font-size:19px}
 .cal-modal-box .cal-side{border:0!important;padding:22px 22px 20px}
 .cal-modal-x{position:absolute;top:10px;right:10px;font-size:22px;line-height:1;z-index:1}
 .cal-modal-box .side-h{margin-right:36px}
+
+/* mês: uma linha por atividade, sem riscado */
+.mcal .mini-ev{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.35;padding:2px 6px}
+.mcal .mini-ev.done{text-decoration:none;opacity:1;color:var(--muted)}
