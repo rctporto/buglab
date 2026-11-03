@@ -673,3 +673,26 @@ legend.step{display:flex;align-items:center;gap:12px;font-size:19px}
 .day-it .tx{display:grid;gap:1px;min-width:0}
 .day-it .tx b{font-size:13.5px;overflow-wrap:anywhere}
 .day-it .tx small{color:var(--muted);font-size:12px}
+
+/* calendário em largura total; detalhes em balão (hover) e janela (clique) */
+.cal-body{grid-template-columns:minmax(0,1fr)!important}
+.cal-main{padding:14px!important}
+.mcal .day-btn{min-height:132px}
+.mcal .mini-ev{font-size:12px}
+.cal-pop{position:fixed;z-index:60;width:340px;max-width:calc(100vw - 20px);max-height:min(460px,calc(100vh - 20px));overflow:auto;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:var(--r-sm);box-shadow:0 12px 32px rgba(0,0,0,.18);padding:12px 14px;display:grid;gap:10px;pointer-events:none}
+.pop-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.pop-h b{font:700 15px var(--f-display)}
+.pop-list{display:grid;gap:8px}
+.pop-it{border-left:3px solid var(--accent);padding:2px 0 2px 9px;display:grid;gap:2px}
+.pop-it.ver{border-left-color:var(--info)}
+.pop-l1{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px}
+.pop-l1 .hr{font:500 12.5px var(--f-mono);color:var(--muted)}
+.pop-l2{font-size:12.5px;color:var(--muted)}
+.pop-obs{font-size:12.5px;line-height:1.4}
+.pop-tip{margin:0;font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.cal-modal{position:fixed;inset:0;z-index:70;background:rgba(10,20,14,.45);display:grid;place-items:center;padding:16px}
+.cal-modal[hidden]{display:none!important}
+.cal-modal-box{position:relative;width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--surface);border-radius:var(--r);box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.cal-modal-box .cal-side{border:0!important;padding:22px 22px 20px}
+.cal-modal-x{position:absolute;top:10px;right:10px;font-size:22px;line-height:1;z-index:1}
+.cal-modal-box .side-h{margin-right:36px}
